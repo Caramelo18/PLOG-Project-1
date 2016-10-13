@@ -16,8 +16,8 @@ display_line([E]):- translate(E),nl, display_row_separator(E).
 display_line([E|Es]):- translate(E), write('|'), display_line(Es).
 
 
-display_row_separator(E):- write('__|__|__|__|__|__').
-display_first_line(E):- write('_________________'), nl.
+display_row_separator(E):- write('___|___|___|___|___|___').
+display_first_line(E):-    write('_______________________'), nl.
 
 %casa do tabuleiro vazia
 translate(s):- write('   ').
@@ -32,17 +32,15 @@ translate(p3):- write('3').
 translate(p4):- write('4').
 translate(p8):- write('8').
 translate(pX):- write('X').
-translate(pI):- write('I').
 
 
 
 /*Pool de Soldados*/
-tiles_pool( [[p1,p1,p1,p1,p1,p1],
-             [p2,p2,p2,p2,p2,p2],
-             [p3,p3,p3,p3,p3,p3],
-             [p4,p4,p4,p4,p4,p4],
-             [p8,p8,p8,p8,p8,p8],
-             [pX,pX,pX,pX,pX,pX]]).% 36 peças 6 de cada tipo
+tiles_pool( [[p1,p1,p1,p1,p1,p1,p1],
+             [p2,p2,p2,p2,p2,p2,p2],
+             [p3,p3,p3,p3,p3,p3,p3],
+             [p4,p4,p4,p4,p4,p4,p4],
+             [p8,p8,p8,p8,p8,p8,p8]]).% 35 peças 7 de cada tipo
    % 3 peças  starter ( tipo X )
    % total 39 peças
 
