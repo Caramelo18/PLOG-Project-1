@@ -8,7 +8,7 @@ board([[s,s,s,s,s,s],
 intermediate_board([[s,s,s,s,s,s],
                     [s,s,s,s,p1,s],
                     [s,p8,s,s,s,s],
-                    [s,s,p2,s,s,s],
+                    [s,s,p2,s,p3,s],
                     [s,s,s,s,s,s],
                     [s,s,s,p4,s,s]]).
 
@@ -44,26 +44,27 @@ display_line_p3([E|Es]):- display_tile_p3(E),
                           write('|'),
                           display_line_p3(Es).
 
-
-display_tile_p1(E):- E == p1 -> draw_tile1_MV;
-                     E == p2 -> draw_tile2_1LR(E);
-                     E == p4 -> draw_tile4_1;
-                     E == p8 -> draw_tile8_1;
-                     E == s -> draw_empty.
-
-display_tile_p2(E,R):- E == p1 -> draw_empty(R);
-                       E == p2 -> draw_empty(R);
-                       E == p4 -> draw_tile4_2(R);
-                       E == p8 -> draw_tile8_2(R);
-                       E == s  -> draw_empty(R).
-
-display_tile_p3(E):- E == p1 -> draw_empty;
-                     E == p2 -> draw_tile2_3LR(R);
-                     E == p4 -> draw_tile4_3;
-                     E == p8 -> draw_tile8_3;
-                     E == s -> draw_empty.
+display_tile_p1(p1):-draw_tile1_MV.
+display_tile_p1(p2):-draw_tile2_1LR.
+display_tile_p1(p3):-draw_tile1_MV.
+display_tile_p1(p4):-draw_tile4_1.
+display_tile_p1(p8):-draw_tile8_1.
+display_tile_p1(s):- draw_empty.
 
 
+display_tile_p2(p1,R):-draw_empty(R).
+display_tile_p2(p2,R):-draw_empty(R).
+display_tile_p2(p3,R):-draw_tile3_2(R).
+display_tile_p2(p4,R):-draw_tile4_2(R).
+display_tile_p2(p8,R):-draw_tile8_2(R).
+display_tile_p2(s,R):- draw_empty(R).
+
+display_tile_p3(p1):-draw_empty.
+display_tile_p3(p2):-draw_tile2_3LR.
+display_tile_p3(p3):-draw_empty.
+display_tile_p3(p4):-draw_tile4_3.
+display_tile_p3(p8):-draw_tile8_3.
+display_tile_p3(s):-draw_empty.
 
 display_line_separator(T):- write('  -----------------------------------').
 display_first_line(T):- write('   A     B     C     D     E     F'), nl.
@@ -120,10 +121,12 @@ draw_tile1_MHR(P):-write('  '),write(P),write('--').
 draw_empty:- write('     ').
 draw_empty(P):-write('  '),write(P),write('  ').
 
-draw_tile2_1LR(X):- write(''\'    ').
-draw_tile2_3LR(X):- write('    '\'').
-draw_tile2_1RL(X):- write('    /').
-draw_tile2_3RL(X):- write('/    ').
+draw_tile2_1LR:- write(''\'    ').
+draw_tile2_3LR:- write('    '\'').
+draw_tile2_1RL:- write('    /').
+draw_tile2_3RL:- write('/    ').
+
+draw_tile3_2(P):-write('--'),write(P),write('--').
 
 draw_tile4_1:- write(''\'   /').
 draw_tile4_2(P):- write('  '), write(P), write('  ').
