@@ -5,14 +5,26 @@ board([[s,s,s,s,s,s],
        [s,s,s,s,s,s],
        [s,s,s,s,s,s]]).
 
+intermediate_board([[s,s,s,s,s,s],
+                    [s,s,s,s,p1,s],
+                    [s,p8,s,s,s,s],
+                    [s,s,p2,s,s,s],
+                    [s,s,s,s,s,s],
+                    [s,s,s,p4,s,s]]).
+
+
 
 
 
 display_board([]):-nl.
-display_board([L1|Ls]):- display_line_p1(L1), nl,
+display_board([L1|Ls], N):- write(' '), display_line_p1(L1), nl,
+                         write(N),
                          display_line_p2(L1), nl,
+                         write(' '),
                          display_line_p3(L1),nl,
-                         display_board(Ls).
+                         display_line_separator(L1), nl ,
+                         N1 is N + 1,
+                         display_board(Ls, N1).
 
 display_line_p1([]).
 display_line_p1(E):- display_tile_p1(E),nl.
@@ -27,26 +39,34 @@ display_line_p2([E|Es]):- display_tile_p2(E,g),
                           display_line_p2(Es).
 
 display_line_p3([]).
-display_line_p3(E):- display_tile_p3(E),nl.
+display_line_p3(E):- display_tile_p3(E), nl.
 display_line_p3([E|Es]):- display_tile_p3(E),
                           write('|'),
                           display_line_p3(Es).
 
+
 display_tile_p1(E):- E == p1 -> draw_tile1_MV;
-                     E == p2 -> draw_tile2_1LR;
+                     E == p2 -> draw_tile2_1LR(E);
+                     E == p4 -> draw_tile4_1;
+                     E == p8 -> draw_tile8_1;
                      E == s -> draw_empty.
 
 display_tile_p2(E,R):- E == p1 -> draw_empty(R);
-                       E == p2 -> draw_tile2_3LR(R);
+                       E == p2 -> draw_empty(R);
+                       E == p4 -> draw_tile4_2(R);
+                       E == p8 -> draw_tile8_2(R);
                        E == s  -> draw_empty(R).
 
 display_tile_p3(E):- E == p1 -> draw_empty;
+                     E == p2 -> draw_tile2_3LR(R);
+                     E == p4 -> draw_tile4_3;
+                     E == p8 -> draw_tile8_3;
                      E == s -> draw_empty.
 
 
 
-display_row_separator():- write('___|___|___|___|___|___').
-display_first_line(E):-    write('_______________________'), nl.
+display_line_separator(T):- write('  -----------------------------------').
+display_first_line(T):- write('   A     B     C     D     E     F'), nl.
 
 
 /*Pool dee Soldados*/
@@ -82,7 +102,7 @@ surrounded_tiles(Pecas). %casas bloqueadas em todas as direçoes
 conquest_tile(Peca). % remover peca  e deixar marca do Jogador
 
 /*final do turno*/
-getSolier(S). % retirar  um Soldado aleatorio á pool.
+getSoldier(S). % retirar  um Soldado aleatorio á pool.
 
 
 /*Game end */
@@ -90,20 +110,25 @@ game_end(D). % todos os quadrados atribuidos a jogadores  e sem pecas em campo.
 
 
 draw_tile8_1:- write(''\' | /').
-draw_tile8_2(R):- write('--'), write(R), write('--').
+draw_tile8_2(P):- write('--'), write(P), write('--').
 draw_tile8_3:- write('/ | '\'').
 
-draw_tile1_MV:- write(' | ').
-draw_tile1_MHL(R):-write('--'),write(R),write('  ').
-draw_tile1_MHR(R):-write('  '),write(R),write('--').
+draw_tile1_MV:- write('  |  ').
+draw_tile1_MHL(P):-write('--'),write(P),write('  ').
+draw_tile1_MHR(P):-write('  '),write(P),write('--').
 
 draw_empty:- write('     ').
-draw_empty(R):-write('  '),write(R),write('  ').
+draw_empty(P):-write('  '),write(P),write('  ').
 
-draw_tile2_1LR:- write(''\'   ').
-draw_tile2_1RL:- write('    /').
-draw_tile2_3LR:- write('    '\'').
-draw_tile2_3RL:- write('/    ').
+draw_tile2_1LR(X):- write(''\'    ').
+draw_tile2_3LR(X):- write('    '\'').
+draw_tile2_1RL(X):- write('    /').
+draw_tile2_3RL(X):- write('/    ').
+
+draw_tile4_1:- write(''\'   /').
+draw_tile4_2(P):- write('  '), write(P), write('  ').
+draw_tile4_3:- write('/   '\'').
 
 
-game(X):-board(X),display_board(X).
+
+game(X):-intermediate_board(X), display_first_line(X), display_board(X, 1).
