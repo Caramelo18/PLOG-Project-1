@@ -5,12 +5,12 @@ board([[s,s,s,s,s,s],
        [s,s,s,s,s,s],
        [s,s,s,s,s,s]]).
 
-intermediate_board([[a1U,a1R,a1D,a1L,s,s],
+intermediate_board([[a1U,a1R,a1D,a1L,s,b10],
                     [a2L,a2R,s,s,s,b8],
                     [a3U,a3R,a3D,a3L,s,b4],
                     [a4,s,b3L,b3D,b3R,b3U],
                     [a8,s,s,s,b2R,b2L],
-                    [s,s,b1L,b1D,b1R,b1U]]).
+                    [a10,s,b1L,b1D,b1R,b1U]]).
 
 
 /* Peças vao ter o seguinte significado:
@@ -36,7 +36,7 @@ display_line_p1([E|Es]):- display_tile_p1(E),
                           display_line_p1(Es).
 
 display_line_p2([]).
-display_line_p2(E):- display_tile_p2(E,g),nl.
+display_line_p2(E):- display_tile_p2(E),nl.
 display_line_p2([E|Es]):- display_tile_p2(E),
                           write('|'),
                           display_line_p2(Es).
@@ -59,6 +59,7 @@ display_tile_p1(a3D):-draw_empty.
 display_tile_p1(a3L):-draw_tile1_MV.
 display_tile_p1(a4):-draw_tile4_1.
 display_tile_p1(a8):-draw_tile8_1.
+display_tile_p1(a10):-draw_tile10_1.
 display_tile_p1(b1U):-draw_tile1_MV.
 display_tile_p1(b1R):-draw_empty.
 display_tile_p1(b1D):-draw_empty.
@@ -71,6 +72,7 @@ display_tile_p1(b3D):-draw_empty.
 display_tile_p1(b3L):-draw_tile1_MV.
 display_tile_p1(b4):-draw_tile4_1.
 display_tile_p1(b8):-draw_tile8_1.
+display_tile_p1(b10):-draw_tile10_1.
 
 display_tile_p1(s):- draw_empty.
 
@@ -87,6 +89,7 @@ display_tile_p2(a3D):-draw_tile3_2(a).
 display_tile_p2(a3L):-draw_tile1_MHL(a).
 display_tile_p2(a4):-draw_tile4_2(a).
 display_tile_p2(a8):-draw_tile8_2(a).
+display_tile_p2(a10):-draw_tile10_2(a).
 display_tile_p2(b1U):-draw_empty(b).
 display_tile_p2(b1R):-draw_tile1_MHR(b).
 display_tile_p2(b1D):-draw_empty(b).
@@ -99,6 +102,7 @@ display_tile_p2(b3D):-draw_tile3_2(b).
 display_tile_p2(b3L):-draw_tile1_MHL(b).
 display_tile_p2(b4):-draw_tile4_2(b).
 display_tile_p2(b8):-draw_tile8_2(b).
+display_tile_p2(b10):-draw_tile10_2(b).
 
 display_tile_p2(s):- draw_empty.
 
@@ -115,6 +119,7 @@ display_tile_p3(a3D):-draw_tile1_MV.
 display_tile_p3(a3L):-draw_tile1_MV.
 display_tile_p3(a4):-draw_tile4_3.
 display_tile_p3(a8):-draw_tile8_3.
+display_tile_p3(a10):-draw_tile10_3.
 display_tile_p3(b1U):-draw_empty.
 display_tile_p3(b1R):-draw_empty.
 display_tile_p3(b1D):-draw_tile1_MV.
@@ -127,6 +132,7 @@ display_tile_p3(b3D):-draw_tile1_MV.
 display_tile_p3(b3L):-draw_tile1_MV.
 display_tile_p3(b4):-draw_tile4_3.
 display_tile_p3(b8):-draw_tile8_3.
+display_tile_p3(b10):-draw_tile10_3.
 
 display_tile_p3(s):-draw_empty.
 
@@ -196,5 +202,8 @@ draw_tile4_1:- write(''\'   /').
 draw_tile4_2(P):- write('  '), write(P), write('  ').
 draw_tile4_3:- write('/   '\'').
 
+draw_tile10_1:- write('|||||').
+draw_tile10_2(P):-write('||'), write(P), write('||').
+draw_tile10_3:- write('|||||').
 
 game(X):-intermediate_board(X), display_first_line(X), display_board(X, 1).
