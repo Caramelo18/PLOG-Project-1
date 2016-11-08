@@ -25,7 +25,8 @@ inputCoords(Row,Col):-  %read row
 
 getNewTileCoord(Row,Col):-
     write('Inser coordinates to place tile: [ Row, Col ]'),
-    inputCoords(Row,Col).
+    inputCoords(Row,Col),
+    Row < 6, Col < 6.
 
 
 
@@ -48,7 +49,7 @@ displayPlayerHand(L1,Pname):-  %draw all pieces in player hand
 %testes
 
 playerhand([tile(a,t2,u),     tile(a,t2,l), tile(a,t2,r)]).
-thand:-playerhand(X),displayPlayerHand(X,'PENIS').
+thand:-playerhand(X),displayPlayerHand(X,'Player 1').
 tinput:- getNewTileCoord(X,Y),write(X), nl, write(Y),nl.
 
 

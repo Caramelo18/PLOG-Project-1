@@ -6,8 +6,13 @@ Direction-> u,d,l,r
 tile(_,_,_).
 
 
-board([ [tile(a,t1,u),     tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)],
-        [tile(a,t2,u),     tile(a,t2,l), tile(a,t2,r), tile(a,t2,d), tile(e,e,e),  tile(e,e,e)] ]).
+board([[tile(a,t1,u),     tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)],
+       [tile(a,t2,u),     tile(a,t2,l), tile(a,t2,r), tile(a,t2,d), tile(e,e,e),  tile(e,e,e)],
+       [tile(a,t3,u),     tile(a,t3,l), tile(a,t3,r), tile(a,t3,d), tile(e,e,e),  tile(e,e,e)],
+       [tile(a,t4,u),     tile(a,t4,l), tile(a,t4,r), tile(a,t4,d), tile(e,e,e),  tile(e,e,e)],
+       [tile(a,t8,u),     tile(a,t8,l), tile(a,t8,r), tile(a,t8,d), tile(e,e,e),  tile(e,e,e)],
+       [tile(a,t10,u),    tile(a,t10,l),tile(a,t10,r),tile(a,t10,d),tile(e,e,e),  tile(e,e,e)]]).
+
 
 intermediate_board([[a1U,a1R,a1D,a1L,s,b10],
                     [a2L,a2R,s,bb,s,b8],
@@ -42,7 +47,6 @@ display_board([L1|Ls], N):- write('  |'),
                                      display_line_p3(L1),
                                      display_line_separators, nl ,
                                      N1 is N + 1,
-                                     !, % temporario
                                      display_board(Ls, N1).
 
 
@@ -130,9 +134,9 @@ draw_tile4_1:- write(''\'   /').
 draw_tile4_2(P):- write('  '), write(P), write('  ').
 draw_tile4_3:- write('/   '\'').
 
-draw_tile10_1:- write('. . .').
-draw_tile10_2(P):-write('. '), write(P), write(' .').
-draw_tile10_3:- write('. . .').
+draw_tile10_1:- write('@ @ @').
+draw_tile10_2(P):-write('@ '), write(P), write(' @').
+draw_tile10_3:- write('@ @ @').
 
 draw_final_tile(P):-write('  '), write(P), write('  ').
 
@@ -185,22 +189,9 @@ getPlayer(tile(P,_,_),P).
 getTile(tile(_,T,_),T):- write(T).
 getDirection(tile(_,_,D),D).
 
-changeOwner(tile(_,T,D),P,tile(P,T,D)).
-
-changeOwnerLine([E1|Es],0,NewOwner,[H|Es]):- changeOwner(E1,NewOwner,H).
-changeOwnerLine([E1|Es],Index,NewOwner,[E1|Result]):-Index>0,
-                                                    I1 is Index-1,
-                                                    changeOwnerLine(Es,I1,NewOwner,Result).
-
-changeOwnerBoard([L1|Ls],0,Index,NewOwner,[H|Ls]):- changeOwnerLine(L1,Index,NewOwner,H).
-changeOwnerBoard([L1|Ls],Col,Index,NewOwner,[L1|Result]):- Col > 0,
-                                                           Col1 is Col - 1,
-                                                           changeOwnerBoard(Ls,Col1,Index,NewOwner,Result).
-
 
 
 line([tile(a,t1,u),tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)]).
 
 tLine:-line(X),changeOwnerLine(X,0,b,R),write(R).
 tboard:- board(X), changeOwnerBoard(X,1,3,c,R), write(R), nl, display_board(R,1).
-game :- board(X), display_first_line, display_board(X, 1).
