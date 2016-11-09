@@ -147,6 +147,13 @@ tiles_pool( [[p1,p1,p1,p1,p1,p1,p1],
              [p3,p3,p3,p3,p3,p3,p3],
              [p4,p4,p4,p4,p4,p4,p4],
              [p8,p8,p8,p8,p8,p8,p8]]).% 35 peças 7 de cada tipo
+
+
+tilePool([t1,t1,t1,t1,t1,t1,
+          t2,t2,t2,t2,t2,t2,
+          t3,t3,t3,t3,t3,t3,
+          t4,t4,t4,t4,t4,t4,
+          t8,t8,t8,t8,t8,t8]).
    % 3 peças  starter ( tipo X )
    % total 39 peças
 

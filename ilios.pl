@@ -25,28 +25,21 @@ placeTile([L1|Ls], tile(P, T, D), Line, Col, [L1|Os]):- Line > 0,
                                                         Line1 is Line - 1,
                                                         placeTile(Ls, tile(P, T, D), Line1, Col, Os).
 
-getRandomLineNum(X):- random(0,5,X).
-getRandomColNum(X):- random(0,7,X).
+getRandom(X,Max):- random(0,Max,X).
+%getRandomColNum(X):- random(0,7,X).
 
-assignTile(Pool, Pool).
+%assignTile(Pool, Pool).
 %removeTile(Pool, Empty). %TODO - remover tile da pool
-getRandomCol(0, [Pool|PoolS], Tile):- assignTile(Pool, Tile).
-getRandomCol(Num, [Pool|PoolS], Tile):- Num > 0,
+getRandomTile(0, [Pool|PoolS], Pool, PoolS).
+getRandomTile(Num, [Pool|PoolS],Tile,[Pool|R]):- Num > 0,
                                         Num1 is Num - 1,
-                                        getRandomCol(Num1, PoolS, Tile).
-
-getRandomLine(0, [Pool|PoolS], Tile):- getRandomColNum(X), getRandomCol(X, Pool, Tile).
-getRandomLine(Num, [Pool|PoolS], Tile):- Num > 0,
-                                        Num1 is Num - 1,
-                                        getRandomLine(Num1, PoolS, Tile).
-
-getRandomTile(Tile):- tiles_pool(Pool), getRandomLineNum(LineNum), getRandomLine(LineNum, Pool, Tile).
-
+                                        getRandomTile(Num1, PoolS, Tile, R).
+getRandomTile(Tile, R):- tilePool(Pool), getRandom(LineNum,36), getRandomTile(LineNum , Pool, Tile,R).
 
 game :- board(X), display_first_line, display_board(X, 1).
 
 gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeOwnerBoard(X, 4, 2, b, T), display_first_line, display_board(T, 1).
 gametestplacetile:- board(X), display_first_line, display_board(X, 1), placeTile(X, tile(b, t8, u), 5, 5, T), display_first_line, display_board(T, 1).
 
-testdrawhand:- getRandomTile(Tile), write('Tile: '), write(Tile).
-oioi:- tiles_pool(Pool), getRandomLine(X), getRandomLine(X, Line, Pool), write(X).
+t:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl, write(R),nl.
+%:- tiles_pool(Pool), getRandomLine(X), getRandomLine(X, Line, Pool), write(X).
