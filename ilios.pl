@@ -40,7 +40,7 @@ getRandomTile(Tile, R):- tilePool(Pool), getRandom(LineNum,36), getRandomTile(Li
 assignTile(Tile, Tile).
 createTile(Tile, Player, Type):- assignTile(tile(Player, Type, _), Tile).
 
-getPlayerStartHand(Player, [Hand|Hands], 0):- getRandomTile(Type, NewPool),
+getPlayerStartHand(Player, [Hand], 0):- getRandomTile(Type, NewPool),
                                               createTile(Hand, Player, Type).
 getPlayerStartHand(Player, [Hand|Hands], Num):- Num > 0,
                                                 getRandomTile(Type, NewPool),
