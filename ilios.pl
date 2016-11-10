@@ -34,20 +34,20 @@ getRandomTile(0, [Pool|PoolS], Pool, PoolS).
 getRandomTile(Num, [Pool|PoolS],Tile,[Pool|R]):- Num > 0,
                                         Num1 is Num - 1,
                                         getRandomTile(Num1, PoolS, Tile, R).
-getRandomTile(Tile, R):- tilePool(Pool), getRandom(LineNum,36), getRandomTile(LineNum , Pool, Tile,R).
+getRandomTile(Tile,Pool, R):- getRandom(LineNum,36), getRandomTile(LineNum , Pool, Tile,R).
 
 
 assignTile(Tile, Tile).
 createTile(Tile, Player, Type):- assignTile(tile(Player, Type, _), Tile).
 
-getPlayerStartHand(Player, [Hand], 0):- getRandomTile(Type, NewPool),
+getPlayerStartHand(Player, [Hand], 0, Pool, NewPool):- getRandomTile(Type,Pool, NewPool),
                                               createTile(Hand, Player, Type).
-getPlayerStartHand(Player, [Hand|Hands], Num):- Num > 0,
-                                                getRandomTile(Type, NewPool),
+getPlayerStartHand(Player, [Hand|Hands], Num, Pool, NewPool):- Num > 0,
+                                                getRandomTile(Type,Pool, TPool),
                                                 createTile(Hand, Player, Type),
                                                 Num1 is Num -1,
-                                                getPlayerStartHand(Player, Hands, Num1).
-getPlayerStartHand(Player, Hand):- getPlayerStartHand(Player, Hand, 2).
+                                                getPlayerStartHand(Player, Hands, Num1,TPool,NewPool).
+getPlayerStartHand(Player, Hand, Pool, NewPool):- getPlayerStartHand(Player, Hand, 2, Pool, NewPool).
 
 
 removeTilePlayerHand(Tile, [Hand|Hands], Hands, 0):- assignTile(Hand, Tile).
@@ -62,7 +62,7 @@ gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeO
 gametestplacetile:- board(X), display_first_line, display_board(X, 1), placeTile(X, tile(b, t8, u), 5, 5, T), display_first_line, display_board(T, 1).
 
 testdrawtile:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl.
-getplayerhand:- getPlayerStartHand(a, List), write(List), nl, displayPlayerHand(List, 'A').
+getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), write(List), nl, displayPlayerHand(List, 'A'),nl, write(NewPool).
 testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
 
 tph([tile(a,t2,r), tile(a,t2,l)]).
