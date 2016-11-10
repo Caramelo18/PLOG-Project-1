@@ -142,9 +142,9 @@ draw_final_tile(P):-write('  '), write(P), write('  ').
 
 
 /*Pool dee Soldados*/
-tilePool([t1u,t1l,t1r,t1d,t1u,t1l,t1r,
-          t2l,t2r,t2l,t2r,t2l,t2r,t2l,
-          t3u,t3l,t3r,t3d,t3u,t3l,t3r,
+tilePool([t1,t1,t1,t1,t1,t1,t1,
+          t2,t2,t2,t2,t2,t2,t2,
+          t3,t3,t3,t3,t3,t3,t3,
           t4,t4,t4,t4,t4,t4,t4,
           t8,t8,t8,t8,t8,t8,t8]).
    % 3 peças  starter ( tipo X )
