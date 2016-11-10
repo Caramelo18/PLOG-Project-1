@@ -30,9 +30,9 @@ inputCoords(Row,Col):-  %read row
                         Row is RRow - 65,
                         Col is RCol - 1. % A = 41.
 
-getNewTileCoord(Row,Col):-
-    write('Inser coordinates to place tile: [ Row, Col ]'),
-    inputCoords(Row,Col),
+getNewTileCoord(Col,Row):-
+    write('Insert coordinates to place tile: [ Col, Row ]'),
+    inputCoords(Col,Row),
     Row < 6, Col < 6.
 
 
@@ -60,6 +60,12 @@ optionSelect(Min,Max, Value):- write('Insert an option: '),
                             Min =< H,
                             H =< Max,
                             Value is H.
+
+showStarterPlayer(Player):- write('     Player '), write(Player), write(' starts').
+
+showPlace2STiles(Player):- write('     Player '), write(Player), write(' place 2 starting tiles. ').
+
+showPlace1STiles(Player):- write('     Player '), write(Player), write(' place 1 starting tile. ').
 
 displayStart:- write('----------------------------'), nl,
                write('||       || ILIOS ||      ||'), nl,

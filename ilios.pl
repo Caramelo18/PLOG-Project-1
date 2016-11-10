@@ -1,7 +1,8 @@
-:-initialization main.
+%:-initialization main.
 :-dynamic(counter/1).
 :-include('board.pl').
 :-include('interface.pl').
+:-dynamic(playerList/1).
 
 changeOwner(tile(_,T,D),P,tile(P,T,D)).
 
@@ -36,16 +37,17 @@ getRandomTile(0, [Pool|PoolS], Pool, PoolS).
 getRandomTile(Num, [Pool|PoolS],Tile,[Pool|R]):- Num > 0,
                                         Num1 is Num - 1,
                                         getRandomTile(Num1, PoolS, Tile, R).
-getRandomTile(Tile,Pool, R):- getRandom(LineNum,36), getRandomTile(LineNum , Pool, Tile,R).
+getRandomTile(Tile,Pool, R, Size):- getRandom(LineNum, Size), getRandomTile(LineNum , Pool, Tile,R).
 
 
 assignTile(Tile, Tile).
 createTile(Tile, Player, Type):- assignTile(tile(Player, Type, _), Tile).
 
-getPlayerStartHand(Player, [Hand], 0, Pool, NewPool):- getRandomTile(Type,Pool, NewPool),
-                                              createTile(Hand, Player, Type).
+getPlayerStartHand(Player, [Hand], 0, Pool, NewPool):- getRandomTile(Type,Pool, NewPool, 33),
+                                                       createTile(Hand, Player, Type).
 getPlayerStartHand(Player, [Hand|Hands], Num, Pool, NewPool):- Num > 0,
-                                                getRandomTile(Type,Pool, TPool),
+                                                Size is 36 - 3 + Num,
+                                                getRandomTile(Type,Pool, TPool, Size),
                                                 createTile(Hand, Player, Type),
                                                 Num1 is Num -1,
                                                 getPlayerStartHand(Player, Hands, Num1,TPool,NewPool).
@@ -64,17 +66,35 @@ gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeO
 gametestplacetile:- board(X), display_first_line, display_board(X, 1), placeTile(X, tile(b, t8, u), 5, 5, T), display_first_line, display_board(T, 1).
 
 %testdrawtile:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl.
-%getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), write(List), nl, displayPlayerHand(List, 'A'),nl, write(NewPool).
+getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), write(List), nl, displayPlayerHand(List, 'A'),nl, write(NewPool).
 %testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
 
 tph([tile(a,t2,r), tile(a,t2,l)]).
 %testaddplayertile:- tph(Hand), addTilePlayerHand(NewPool, a, Hand, NewHand), displayPlayerHand(NewHand, 'A').
-/*
-    TODO - gerar mao aleatoria do jogador - falta actualizar tabuleiro
-         - remover peça da mão - CHECK
-         - adicionar peça à mão - CHECK
-         - contar pontos
-*/
+
+getTilePoint(Tile, Value):- getTile(Tile, Type), integer(Type), Value is Type.
+getTilePoint(_, Value):- Value is 0.
+
+updatePoints(Base, Sum, Total):- Total is Base + Sum.
+
+sumPoints('A', PointsA, _, NewPointsA, _, Value):- updatePoints(PointsA, Value, NewPointsA), nl, write('nv'). % TODO - fix NewPointsA assignement
+sumPoints('B', _, PointsB, _, NewPointsB, Value):- NewPointsB = PointsB + Value.
+sumPoints(_, PointsA, PointsB, NewPointsA, NewPointsB, _):- NewPointsA is PointsA, NewPointsB is PointsB.
+
+totalPointsLine([], _, _, _, _).
+totalPointsLine([Line|LineS], PlA, PlB, ScA, ScB):- getTilePoint(Line, Value), write(Value), write(' '),
+                                                    getPlayer(Line, Player),
+                                                    sumPoints(Player, PlA, PlB, ScA, ScB, Value),
+                                                    totalPointsLine(LineS, ScA, ScB, ScA, ScB).
+
+totalPoints([], _, _, _, _).
+totalPoints([Board|BoardS], PlA, PlB, ScA, ScB):- totalPointsLine(Board, PlA, PlB, ScA, ScB), nl,
+                                                  totalPoints(BoardS, ScA, ScB, ScA, ScB).
+
+totalPoints(ScoreA, ScoreB):- board(Board), totalPoints(Board, 0, 0, ScoreA, ScoreB).
+
+testgettotalpoints:- totalPoints(ScoreA, ScoreB), write('Points A: '), write(ScoreA), nl, write('Points B: '), write(ScoreB).
+
 
 
 /* GAME
@@ -93,3 +113,27 @@ repeat:
 main:- confGame(GameType,BotLevel),
         %debug
         write(GameType), write(' '), write(BotLevel).
+
+playerListOp([['A' , 'B'], ['B', 'A']]).
+pickFirstPlayer(0, Order):- playerListOp([Order|_]).
+pickFirstPlayer(1, Order):- playerListOp([_|[Order]]).
+drawFirstPlayer([Pl|Ps]):- random(0, 2, P), pickFirstPlayer(P, [Pl|Ps]).
+
+%redefinir tabuleiro com retract
+playGame:-
+    board(B), tilePool(Pool),
+    drawFirstPlayer([P1|[P2]]),
+    getPlayerStartHand(P1, P1Hand, Pool, NewPool),
+    getPlayerStartHand(P2, P2Hand, NewPool, NNewPool),
+    displayBoard(B), nl,
+    showStarterPlayer(P1), nl,
+    showPlace2STiles(P1),
+    getNewTileCoord(P1SC, P1SR),
+    getNewTileCoord(P1SC2, P1SR2),
+    placeTile(B, tile(P1,t10,u), P1SR, P1SC, B1),
+    placeTile(B1, tile(P1,t10,u), P1SR2, P1SC2, B2),
+    displayBoard(B2), nl,
+    showPlace1STiles(P2),
+    getNewTileCoord(P2SC, P2SR),
+    placeTile(B2, tile(P2, t10,u), P2SR, P2SC, B3),
+    displayBoard(B3), nl.

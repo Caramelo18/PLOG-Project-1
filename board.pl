@@ -5,21 +5,27 @@ Direction-> u,d,l,r
 */
 tile(_,_,_).
 
-/*
-board([[tile(a,t1,u),     tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)],
-       [tile(a,t2,l),     tile(a,t2,l), tile(a,t2,r), tile(a,t2,r), tile(e,e,e),  tile(e,e,e)],
-       [tile(a,t3,u),     tile(a,t3,l), tile(a,t3,r), tile(a,t3,d), tile(e,e,e),  tile(e,e,e)],
-       [tile(a,t4,u),     tile(a,t4,l), tile(a,t4,r), tile(a,t4,d), tile(e,e,e),  tile(e,e,e)],
-       [tile(a,t8,u),     tile(a,t8,l), tile(a,t8,r), tile(a,t8,d), tile(e,e,e),  tile(e,e,e)],
-       [tile(a,t10,u),    tile(a,t10,l),tile(a,t10,r),tile(a,t10,d),tile(e,e,e),  tile(e,e,e)]]).
-*/
+board([[tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
+        [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
+        [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
+        [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
+        [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
+        [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)]]).
 
-board([[tile(a,1,u),     tile(a,1,l), tile(a,1,r), tile(a,1,d), tile(a,1,e),  tile(a,1,e)],
-       [tile(a,2,l),     tile(a,2,l), tile(a,2,r), tile(a,2,r), tile(a,1,e),  tile(a,1,e)],
-       [tile(a,3,u),     tile(a,3,l), tile(a,3,r), tile(a,3,d), tile(a,1,e),  tile(a,1,e)],
-       [tile(a,4,u),     tile(a,4,l), tile(a,4,r), tile(a,4,d), tile(a,1,e),  tile(a,1,e)],
-       [tile(a,8,u),     tile(a,8,l), tile(a,8,r), tile(a,8,d), tile(a,1,e),  tile(a,1,e)],
-       [tile(a,10,u),    tile(a,10,l),tile(a,10,r),tile(a,10,d),tile(a,1,e),  tile(a,1,e)]]).
+testboard([[tile('a',t1,u),     tile('A',1,l), tile('a',t1,r), tile('a',t1,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('a',t2,l),     tile('a',t2,l), tile('a',t2,r), tile('a',t2,r), tile(e,e,e),  tile(e,e,e)],
+           [tile('a',t3,u),     tile('a',t3,l), tile('a',t3,r), tile('a',t3,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('a',t4,u),     tile('a',t4,l), tile('a',t4,r), tile('a',t4,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('a',t8,u),     tile('a',t8,l), tile('B',8,r), tile('a',t8,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('a',t10,u),    tile('a',t10,l),tile('a',t10,r),tile('a',t10,d),tile('A', 8, s),  tile(e,e,e)]]).
+
+
+finalboard([[tile(a,1,u),     tile(a,1,l), tile(a,1,r), tile(a,1,d), tile(a,1,e),  tile(a,1,e)],
+            [tile(a,2,l),     tile(a,2,l), tile(a,2,r), tile(a,2,r), tile(a,1,e),  tile(a,1,e)],
+            [tile(a,3,u),     tile(a,3,l), tile(a,3,r), tile(a,3,d), tile(a,1,e),  tile(a,1,e)],
+            [tile(a,4,u),     tile(a,4,l), tile(a,4,r), tile(a,4,d), tile(a,1,e),  tile(a,1,e)],
+            [tile(a,8,u),     tile(a,8,l), tile(a,8,r), tile(a,8,d), tile(a,1,e),  tile(a,1,e)],
+            [tile(a,10,u),    tile(a,10,l),tile(a,10,r),tile(a,10,d),tile(a,1,e),  tile(a,1,e)]]).
 
 
 display_board([],_):-nl.
@@ -180,6 +186,7 @@ getPlayer(tile(P,_,_),P).
 getTile(tile(_,T,_),T).
 getDirection(tile(_,_,D),D).
 
+displayBoard(Board):- display_first_line, display_board(Board, 1).
 
 
 line([tile(a,t1,u),tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)]).
@@ -187,4 +194,4 @@ line([tile(a,t1,u),tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(
 tLine:-line(X),changeOwnerLine(X,0,b,R),write(R).
 tboard:- board(X), changeOwnerBoard(X,1,3,c,R), write(R), nl, display_board(R,1).
 
-tfull:-board(X),boardFull(X).
+tfull:-fullboard(X),boardFull(X).
