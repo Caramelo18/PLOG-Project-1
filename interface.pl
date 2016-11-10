@@ -12,6 +12,13 @@ getCode(Input):- get_code(TempInput),
                  %get_code(_),
               	 Input is TempInput.
 
+clearInput :- get_code(H),
+              (
+                H =\= 10 -> clearInput;
+                true
+
+              ).
+
 inputCoords(Row,Col):-  %read row
                         getCode(RRow),
 
@@ -45,7 +52,14 @@ displayPlayerHand(L1,Pname):-  %draw all pieces in player hand
                           display_line_p3(L1),
                           write('  -------------------').
 
-getOption(Min,Max, Value):- write("Inser an option: "), getInt(Input), nl.
+
+optionSelect(Min,Max, Value):- write('Insert an option: '),
+                            getInt(H),
+                            clearInput,
+                            nl,
+                            Min =< H,
+                            H =< Max,
+                            Value is H.
 
 displayStart:- write('----------------------------'), nl,
                write('||       || ILIOS ||      ||'), nl,
@@ -57,6 +71,7 @@ displayMenu:- write('----------------------------'), nl,
               write('| |  1 Player Vs Player   | |'), nl,
               write('| |  2 Player Vs Bot      | |'), nl,
               write('| |  3 Bot    Vs Bot      | |'), nl,
+              write('| |  4 Exit               | |'), nl,
               write('----------------------------').
 
 displayBotLevel:-write('----------------------------'), nl,
@@ -65,11 +80,33 @@ displayBotLevel:-write('----------------------------'), nl,
                  write('| |     2  Level 2       | |'), nl,
                  write('----------------------------').
 
-startGame(GameType,BotLevel):- displayStart,
-                   nl,
-                   displayMenu,
-                   getOption(1,3,GameType).
 
+selectBot(BotLevel):- repeat,
+                      nl,
+                      displayBotLevel,
+                      nl,
+                      write('----------------------------'),
+                      nl,
+                      optionSelect(1,2,BotLevel),
+                      write('----------------------------'),
+                      nl.
+
+confGame(GameType,BotLevel):- displayStart,
+                               nl,
+                               displayMenu,
+                               repeat,
+                               nl,
+                               write('----------------------------'),
+                               nl,
+                               optionSelect(1,4,GameType),
+                               (
+                                  GameType = 1 -> BotLevel is 0; % PvP
+                                  GameType = 2 -> selectBot(BotLevel); % PvB
+                                  GameType = 3 -> selectBot(BotLevel); % BvB
+                                  GameType = 4 % Exit
+                               ),
+                               write('----------------------------'),
+                               nl.
 
 %testes
 

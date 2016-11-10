@@ -1,4 +1,5 @@
-%:-initialization main.
+:-initialization main.
+:-dynamic(counter/1).
 :-include('board.pl').
 :-include('interface.pl').
 
@@ -85,13 +86,10 @@ repeat:
         fim de jogo,
       Mostar Resultados
 */
-
-
 /*
 
-main:-
-  repeat,
-    displayStart,
-    displayMenu,
-    getOption("Choose a option: ", 1,3, Value).
+
 */
+main:- confGame(GameType,BotLevel),
+        %debug
+        write(GameType), write(' '), write(BotLevel).
