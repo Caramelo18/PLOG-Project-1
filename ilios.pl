@@ -25,21 +25,61 @@ placeTile([L1|Ls], tile(P, T, D), Line, Col, [L1|Os]):- Line > 0,
                                                         Line1 is Line - 1,
                                                         placeTile(Ls, tile(P, T, D), Line1, Col, Os).
 
-getRandom(X,Max):- random(0,Max,X).
-%getRandomColNum(X):- random(0,7,X).
 
-%assignTile(Pool, Pool).
-%removeTile(Pool, Empty). %TODO - remover tile da pool
+getRandom(X,Max):- random(0,Max,X).
+
+updatePool(Pool, Pool).
+
 getRandomTile(0, [Pool|PoolS], Pool, PoolS).
 getRandomTile(Num, [Pool|PoolS],Tile,[Pool|R]):- Num > 0,
                                         Num1 is Num - 1,
                                         getRandomTile(Num1, PoolS, Tile, R).
 getRandomTile(Tile, R):- tilePool(Pool), getRandom(LineNum,36), getRandomTile(LineNum , Pool, Tile,R).
 
-game :- board(X), display_first_line, display_board(X, 1).
+
+assignTile(Tile, Tile).
+createTile(Tile, Player, t1u):- assignTile(tile(Player, t1, u), Tile).
+createTile(Tile, Player, t1l):- assignTile(tile(Player, t1, l), Tile).
+createTile(Tile, Player, t1d):- assignTile(tile(Player, t1, d), Tile).
+createTile(Tile, Player, t1r):- assignTile(tile(Player, t1, r), Tile).
+createTile(Tile, Player, t2l):- assignTile(tile(Player, t2, l), Tile).
+createTile(Tile, Player, t2r):- assignTile(tile(Player, t2, r), Tile).
+createTile(Tile, Player, t3u):- assignTile(tile(Player, t3, u), Tile).
+createTile(Tile, Player, t3l):- assignTile(tile(Player, t3, l), Tile).
+createTile(Tile, Player, t3d):- assignTile(tile(Player, t3, d), Tile).
+createTile(Tile, Player, t3r):- assignTile(tile(Player, t3, r), Tile).
+createTile(Tile, Player, Type):- assignTile(tile(Player, Type, u), Tile).
+
+getPlayerStartHand(Player, [Hand|Hands], 0):- getRandomTile(Type),
+                                              createTile(Hand, Player, Type).
+getPlayerStartHand(Player, [Hand|Hands], Num):- Num > 0,
+                                                getRandomTile(Type, NewPool),
+                                                createTile(Hand, Player, Type),
+                                                Num1 is Num -1,
+                                                getPlayerStartHand(Player, Hands, Num1).
+getPlayerStartHand(Player, Hand):- getPlayerStartHand(Player, Hand, 2).
+
+
+removeTilePlayerHand(Tile, [Hand|Hands], Hands, 0):- assignTile(Hand, Tile).
+removeTilePlayerHand(Tile, [Hand|Hands], [Hand|NewHands], TileNum):- TileNum > 0, TileNum < 3,
+                                                                        TileNum1 is TileNum -1,
+                                                                        removeTilePlayerHand(Tile, Hands, NewHands, TileNum1).
+
+addTilePlayerHand(NewPool, Player, Hand, NewHand):- getRandomTile(Type, NewPool), createTile(Tile, Player, Type), append([Tile], Hand, NewHand), nl.
+displayboard:- board(X), display_first_line, display_board(X, 1).
 
 gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeOwnerBoard(X, 4, 2, b, T), display_first_line, display_board(T, 1).
 gametestplacetile:- board(X), display_first_line, display_board(X, 1), placeTile(X, tile(b, t8, u), 5, 5, T), display_first_line, display_board(T, 1).
 
-t:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl, write(R),nl.
-%:- tiles_pool(Pool), getRandomLine(X), getRandomLine(X, Line, Pool), write(X).
+testdrawtile:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl.
+getplayerhand:- getPlayerStartHand(a, List), displayPlayerHand(List, 'A').
+testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
+
+tph([tile(a,t2,r), tile(a,t2,l)]).
+testaddplayertile:- tph(Hand), addTilePlayerHand(NewPool, a, Hand, NewHand), displayPlayerHand(NewHand, 'A').
+/*
+    TODO - gerar mao aleatoria do jogador - falta actualizar tabuleiro
+         - remover peça da mão - CHECK
+         - adicionar peça à mão
+         - contar pontos
+*/

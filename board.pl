@@ -7,7 +7,7 @@ tile(_,_,_).
 
 
 board([[tile(a,t1,u),     tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)],
-       [tile(a,t2,u),     tile(a,t2,l), tile(a,t2,r), tile(a,t2,d), tile(e,e,e),  tile(e,e,e)],
+       [tile(a,t2,l),     tile(a,t2,l), tile(a,t2,r), tile(a,t2,r), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t3,u),     tile(a,t3,l), tile(a,t3,r), tile(a,t3,d), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t4,u),     tile(a,t4,l), tile(a,t4,r), tile(a,t4,d), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t8,u),     tile(a,t8,l), tile(a,t8,r), tile(a,t8,d), tile(e,e,e),  tile(e,e,e)],
@@ -142,18 +142,11 @@ draw_final_tile(P):-write('  '), write(P), write('  ').
 
 
 /*Pool dee Soldados*/
-tiles_pool( [[p1,p1,p1,p1,p1,p1,p1],
-             [p2,p2,p2,p2,p2,p2,p2],
-             [p3,p3,p3,p3,p3,p3,p3],
-             [p4,p4,p4,p4,p4,p4,p4],
-             [p8,p8,p8,p8,p8,p8,p8]]).% 35 peças 7 de cada tipo
-
-
-tilePool([t1,t1,t1,t1,t1,t1,
-          t2,t2,t2,t2,t2,t2,
-          t3,t3,t3,t3,t3,t3,
-          t4,t4,t4,t4,t4,t4,
-          t8,t8,t8,t8,t8,t8]).
+tilePool([t1u,t1l,t1r,t1d,t1u,t1l,t1r,
+          t2l,t2r,t2l,t2r,t2l,t2r,t2l,
+          t3u,t3l,t3r,t3d,t3u,t3l,t3r,
+          t4,t4,t4,t4,t4,t4,t4,
+          t8,t8,t8,t8,t8,t8,t8]).
    % 3 peças  starter ( tipo X )
    % total 39 peças
 
