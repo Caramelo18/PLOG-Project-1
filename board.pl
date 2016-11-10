@@ -5,36 +5,21 @@ Direction-> u,d,l,r
 */
 tile(_,_,_).
 
-
+/*
 board([[tile(a,t1,u),     tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t2,l),     tile(a,t2,l), tile(a,t2,r), tile(a,t2,r), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t3,u),     tile(a,t3,l), tile(a,t3,r), tile(a,t3,d), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t4,u),     tile(a,t4,l), tile(a,t4,r), tile(a,t4,d), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t8,u),     tile(a,t8,l), tile(a,t8,r), tile(a,t8,d), tile(e,e,e),  tile(e,e,e)],
        [tile(a,t10,u),    tile(a,t10,l),tile(a,t10,r),tile(a,t10,d),tile(e,e,e),  tile(e,e,e)]]).
+*/
 
-
-intermediate_board([[a1U,a1R,a1D,a1L,s,b10],
-                    [a2L,a2R,s,bb,s,b8],
-                    [a3U,a3R,a3D,a3L,s,b4],
-                    [a4,s,b3L,b3D,b3R,b3U],
-                    [a8,s,aa,s,b2R,b2L],
-                    [a10,s,b1L,b1D,b1R,b1U]]).
-
-
-startgame([[aa,bb,bb,aa,aa,aa],
-           [aa,bb,bb,bb,bb,aa],
-           [bb,bb,aa,bb,aa,aa],
-           [aa,aa,bb,bb,aa,aa],
-           [bb,bb,bb,aa,bb,aa],
-           [bb,aa,aa,aa,bb,aa]]).
-
-
-validmove([[s,s,s,s,s,s],
-           [s,a10,s,s,s,s]]).
-
-
-
+board([[tile(a,1,u),     tile(a,1,l), tile(a,1,r), tile(a,1,d), tile(a,1,e),  tile(a,1,e)],
+       [tile(a,2,l),     tile(a,2,l), tile(a,2,r), tile(a,2,r), tile(a,1,e),  tile(a,1,e)],
+       [tile(a,3,u),     tile(a,3,l), tile(a,3,r), tile(a,3,d), tile(a,1,e),  tile(a,1,e)],
+       [tile(a,4,u),     tile(a,4,l), tile(a,4,r), tile(a,4,d), tile(a,1,e),  tile(a,1,e)],
+       [tile(a,8,u),     tile(a,8,l), tile(a,8,r), tile(a,8,d), tile(a,1,e),  tile(a,1,e)],
+       [tile(a,10,u),    tile(a,10,l),tile(a,10,r),tile(a,10,d),tile(a,1,e),  tile(a,1,e)]]).
 
 
 display_board([],_):-nl.
@@ -178,15 +163,21 @@ tilePool([t1,t1,t1,t1,t1,t1,t1,
 
 
 /*Game end */
-%game_end(D). % todos os quadrados atribuidos a jogadores  e sem pecas em campo.
+% todos os quadrados atribuidos a jogadores  e sem pecas em campo.
 
+/* testa se o board ta completo */
+boardFull([]).
+boardFull([L1|Ls]):-boardFullLine(L1),!,boardFull(Ls).
 
+boardFullLine([]).
+boardFullLine([E1|Es]):- getTile(E1,T), integer(T),!, boardFullLine(Es).
+/*_____________________*/
 
 maketile(P,T,D, tile(P,T,D)).
 
 /* get info from tile*/
 getPlayer(tile(P,_,_),P).
-getTile(tile(_,T,_),T):- write(T).
+getTile(tile(_,T,_),T).
 getDirection(tile(_,_,D),D).
 
 
@@ -195,3 +186,5 @@ line([tile(a,t1,u),tile(a,t1,l), tile(a,t1,r), tile(a,t1,d), tile(e,e,e),  tile(
 
 tLine:-line(X),changeOwnerLine(X,0,b,R),write(R).
 tboard:- board(X), changeOwnerBoard(X,1,3,c,R), write(R), nl, display_board(R,1).
+
+tfull:-board(X),boardFull(X).

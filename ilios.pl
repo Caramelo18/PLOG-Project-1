@@ -1,3 +1,4 @@
+%:-initialization main.
 :-include('board.pl').
 :-include('interface.pl').
 
@@ -61,15 +62,36 @@ displayboard:- board(X), display_first_line, display_board(X, 1).
 gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeOwnerBoard(X, 4, 2, b, T), display_first_line, display_board(T, 1).
 gametestplacetile:- board(X), display_first_line, display_board(X, 1), placeTile(X, tile(b, t8, u), 5, 5, T), display_first_line, display_board(T, 1).
 
-testdrawtile:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl.
-getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), write(List), nl, displayPlayerHand(List, 'A'),nl, write(NewPool).
-testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
+%testdrawtile:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl.
+%getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), write(List), nl, displayPlayerHand(List, 'A'),nl, write(NewPool).
+%testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
 
 tph([tile(a,t2,r), tile(a,t2,l)]).
-testaddplayertile:- tph(Hand), addTilePlayerHand(NewPool, a, Hand, NewHand), displayPlayerHand(NewHand, 'A').
+%testaddplayertile:- tph(Hand), addTilePlayerHand(NewPool, a, Hand, NewHand), displayPlayerHand(NewHand, 'A').
 /*
     TODO - gerar mao aleatoria do jogador - falta actualizar tabuleiro
          - remover peça da mão - CHECK
          - adicionar peça à mão - CHECK
          - contar pontos
+*/
+
+
+/* GAME
+
+Inicializaçao
+
+repeat:
+        jogar,
+        fim de jogo,
+      Mostar Resultados
+*/
+
+
+/*
+
+main:-
+  repeat,
+    displayStart,
+    displayMenu,
+    getOption("Choose a option: ", 1,3, Value).
 */
