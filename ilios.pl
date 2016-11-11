@@ -1,5 +1,5 @@
 %:-initialization main.
-:-dynamic(counter/1).
+%:-dynamic(counter/1).
 :-include('board.pl').
 :-include('interface.pl').
 :-dynamic(playerList/1).
@@ -77,21 +77,20 @@ getTilePoint(_, Value):- Value is 0.
 
 updatePoints(Base, Sum, Total):- Total is Base + Sum.
 
-sumPoints('A', PointsA, _, NewPointsA, _, Value):- updatePoints(PointsA, Value, NewPointsA), nl, write('nv'). % TODO - fix NewPointsA assignement
-sumPoints('B', _, PointsB, _, NewPointsB, Value):- NewPointsB = PointsB + Value.
-sumPoints(_, PointsA, PointsB, NewPointsA, NewPointsB, _):- NewPointsA is PointsA, NewPointsB is PointsB.
+sumPoints('A', PointsA, PointsB, NewPointsA, PointsB, Value):- updatePoints(PointsA, Value, NewPointsA). % TODO - fix NewPointsA assignement
+sumPoints('B', PointsA, PointsB, PointsA, NewPointsB, Value):- updatePoints(PointsB, Value, NewPointsB).
+sumPoints(_, PointsA, PointsB, PointsA, PointsB, _).
 
-totalPointsLine([], _, _, _, _).
-totalPointsLine([Line|LineS], PlA, PlB, ScA, ScB):- getTilePoint(Line, Value), write(Value), write(' '),
+totalPointsLine([], PlA, PlB, PlA, PlB).
+totalPointsLine([Line|LineS], PlA, PlB, ScA, ScB):- getTilePoint(Line, Value),
                                                     getPlayer(Line, Player),
-                                                    sumPoints(Player, PlA, PlB, ScA, ScB, Value),
-                                                    totalPointsLine(LineS, ScA, ScB, ScA, ScB).
+                                                    sumPoints(Player, PlA, PlB, RA, RB, Value),
+                                                    totalPointsLine(LineS, RA, RB, ScA, ScB).
 
-totalPoints([], _, _, _, _).
-totalPoints([Board|BoardS], PlA, PlB, ScA, ScB):- totalPointsLine(Board, PlA, PlB, ScA, ScB), nl,
-                                                  totalPoints(BoardS, ScA, ScB, ScA, ScB).
-
-totalPoints(ScoreA, ScoreB):- board(Board), totalPoints(Board, 0, 0, ScoreA, ScoreB).
+totalPoints([], PlA,PlB, PlA, PlB).
+totalPoints([Board|BoardS], PlA, PlB, ScA, ScB):- totalPointsLine(Board, PlA, PlB, RLA, RLB),
+                                                  totalPoints(BoardS, RLA, RLB, ScA, ScB).
+totalPoints(ScoreA, ScoreB):- testboard(Board), totalPoints(Board, 0, 0, ScoreA, ScoreB).%TODO MUDAR BOARD
 
 testgettotalpoints:- totalPoints(ScoreA, ScoreB), write('Points A: '), write(ScoreA), nl, write('Points B: '), write(ScoreB).
 
@@ -109,16 +108,19 @@ repeat:
 /*
 
 
-*/
-main:- confGame(GameType,BotLevel),
+main:-confGame(GameType,BotLevel),
         %debug
         write(GameType), write(' '), write(BotLevel).
-
+*/
 playerListOp([['A' , 'B'], ['B', 'A']]).
 pickFirstPlayer(0, Order):- playerListOp([Order|_]).
 pickFirstPlayer(1, Order):- playerListOp([_|[Order]]).
 drawFirstPlayer([Pl|Ps]):- random(0, 2, P), pickFirstPlayer(P, [Pl|Ps]).
 
+
+
+playerStartTurn(Player,Board,NewBoard):-getNewTileCoord(Col, Row),
+                                        placeTile(Board, tile(Player,t10,u), Row, Col, NewBoard).
 %redefinir tabuleiro com retract
 startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
     board(B), tilePool(Pool),
@@ -128,14 +130,18 @@ startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
     displayBoard(B), nl,
     showStarterPlayer(P1), nl,
     showPlace2STiles(P1),
-    getNewTileCoord(P1SC, P1SR),
-    getNewTileCoord(P1SC2, P1SR2),
-    placeTile(B, tile(P1,t10,u), P1SR, P1SC, B1),
-    placeTile(B1, tile(P1,t10,u), P1SR2, P1SC2, B2),
+
+    %P1 places 2 type 10tiles
+    playerStartTurn(P1,B,B1),
+
+    playerStartTurn(P1,B1,B2),
+
     displayBoard(B2), nl,
+
+    %P2 places 1 type 10 tile
     showPlace1STiles(P2),
-    getNewTileCoord(P2SC, P2SR),
-    placeTile(B2, tile(P2, t10,u), P2SR, P2SC, B3),
+    playerStartTurn(P2,B2,B3),
+
     displayBoard(B3), nl.
 
 
@@ -152,6 +158,7 @@ game(Board, P1Hand, P2Hand, TilePool, [P1|P2]):-
     getNewTileCoord(P2C, P2R),
     placeTile(Board1, Tile2, P2R, P2C, NewBoard),
     displayBoard(NewBoard), nl.
+    
 /*
 selectTile([Hand|HandS], 0, Hand).
 selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,

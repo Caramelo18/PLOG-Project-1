@@ -16,7 +16,6 @@ clearInput :- get_code(H),
               (
                 H =\= 10 -> clearInput;
                 true
-
               ).
 
 inputCoords(Row,Col):-  %read row
@@ -26,13 +25,14 @@ inputCoords(Row,Col):-  %read row
 
                         getInt(RCol),
 
-                        get_code(_),
                         Row is RRow - 65,
                         Col is RCol - 1. % A = 41.
 
 getNewTileCoord(Col,Row):-
+    repeat,
     write('Insert coordinates to place tile: [ Col, Row ]'),
     inputCoords(Col,Row),
+    clearInput,
     Row < 6, Col < 6.
 
 getNumTile(Num):-

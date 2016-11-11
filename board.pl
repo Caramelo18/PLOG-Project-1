@@ -12,9 +12,9 @@ board([[tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  ti
         [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
         [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)]]).
 
-testboard([[tile('a',t1,u),     tile('A',1,l), tile('a',t1,r), tile('a',t1,d), tile(e,e,e),  tile(e,e,e)],
+testboard([[tile('a',t1,u),     tile('A',1,l), tile('A',1,r), tile('a',t1,d), tile(e,e,e),  tile(e,e,e)],
            [tile('a',t2,l),     tile('a',t2,l), tile('a',t2,r), tile('a',t2,r), tile(e,e,e),  tile(e,e,e)],
-           [tile('a',t3,u),     tile('a',t3,l), tile('a',t3,r), tile('a',t3,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('a',t3,u),     tile('a',t3,l), tile('A',3,r), tile('a',t3,d), tile(e,e,e),  tile(e,e,e)],
            [tile('a',t4,u),     tile('a',t4,l), tile('a',t4,r), tile('a',t4,d), tile(e,e,e),  tile(e,e,e)],
            [tile('a',t8,u),     tile('a',t8,l), tile('B',8,r), tile('a',t8,d), tile(e,e,e),  tile(e,e,e)],
            [tile('a',t10,u),    tile('a',t10,l),tile('a',t10,r),tile('a',t10,d),tile('A', 8, s),  tile(e,e,e)]]).
@@ -171,6 +171,20 @@ tilePool([t1,t1,t1,t1,t1,t1,t1,
 /*Game end */
 % todos os quadrados atribuidos a jogadores  e sem pecas em campo.
 
+
+/* testa se posicao esta vazia */
+emptyPlaceLine([E1|Es],0):-getPlayer(E1,P),
+                           P = e.
+emptyPlaceLine([E1|Es],Col):- Col > 0,
+                              Col1 is Col -1,
+                              emptyPlaceLine(Es,Col1).
+
+emptyPlace([L1|Ls],0,Col):-emptyPlaceLine(L1,Col).
+emptyPlace([L1|Ls],Line,Col):-Line > 0,
+                              Line1 is Line -1,
+                              emptyPlace(Ls,Line1,Col).
+
+
 /* testa se o board ta completo */
 boardFull([]).
 boardFull([L1|Ls]):-boardFullLine(L1),!,boardFull(Ls).
@@ -195,3 +209,4 @@ tLine:-line(X),changeOwnerLine(X,0,b,R),write(R).
 tboard:- board(X), changeOwnerBoard(X,1,3,c,R), write(R), nl, display_board(R,1).
 
 tfull:-fullboard(X),boardFull(X).
+tempty:-testboard(X),emptyPlace(X,1,1).
