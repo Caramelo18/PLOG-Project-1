@@ -43,7 +43,7 @@ getRandomTile(Tile,Pool, R, Size):- getRandom(LineNum, Size), getRandomTile(Line
 assignTile(Tile, Tile).
 createTile(Tile, Player, Type):- assignTile(tile(Player, Type, _), Tile).
 
-getPlayerStartHand(Player, [Hand], 0, Pool, NewPool):- getRandomTile(Type,Pool, NewPool, 33),
+getPlayerStartHand(Player, [Hand], 0, Pool, NewPool):- getRandomTile(Type,Pool, NewPool, 30), %TODO - fix size - pool does not start always with size 36
                                                        createTile(Hand, Player, Type).
 getPlayerStartHand(Player, [Hand|Hands], Num, Pool, NewPool):- Num > 0,
                                                 Size is 36 - 3 + Num,
@@ -120,11 +120,11 @@ pickFirstPlayer(1, Order):- playerListOp([_|[Order]]).
 drawFirstPlayer([Pl|Ps]):- random(0, 2, P), pickFirstPlayer(P, [Pl|Ps]).
 
 %redefinir tabuleiro com retract
-playGame:-
+startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
     board(B), tilePool(Pool),
     drawFirstPlayer([P1|[P2]]),
     getPlayerStartHand(P1, P1Hand, Pool, NewPool),
-    getPlayerStartHand(P2, P2Hand, NewPool, NNewPool),
+    getPlayerStartHand(P2, P2Hand, NewPool, PoolF),
     displayBoard(B), nl,
     showStarterPlayer(P1), nl,
     showPlace2STiles(P1),
@@ -137,3 +137,24 @@ playGame:-
     getNewTileCoord(P2SC, P2SR),
     placeTile(B2, tile(P2, t10,u), P2SR, P2SC, B3),
     displayBoard(B3), nl.
+
+
+game(Board, P1Hand, P2Hand, TilePool, [P1|P2]):-
+    displayPlayerHand(P1Hand, P1),
+    getNumTile(P1TN),
+    removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
+    getNewTileCoord(P1C, P1R),
+    placeTile(Board, Tile, P1R, P1C, Board1),
+    displayBoard(Board1), nl,
+    displayPlayerHand(P2Hand, P2),
+    getNumTile(P2TN),
+    removeTilePlayerHand(Tile2, P2Hand, NP2Hand, P2TN),
+    getNewTileCoord(P2C, P2R),
+    placeTile(Board1, Tile2, P2R, P2C, NewBoard),
+    displayBoard(NewBoard), nl.
+/*
+selectTile([Hand|HandS], 0, Hand).
+selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,
+                                      selectTile(HandS, Num1, Tile).
+*/
+test:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, Players).

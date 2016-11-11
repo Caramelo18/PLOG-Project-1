@@ -35,6 +35,12 @@ getNewTileCoord(Col,Row):-
     inputCoords(Col,Row),
     Row < 6, Col < 6.
 
+getNumTile(Num):-
+    nl, write('Select tile to place (0, 1, 2): '),
+    getInt(Num),
+    Num >= 0, Num < 3,
+    getChar(_). %TODO - temporary - fix input
+
 
 
 displayPlayerHand(L1,Pname):-  %draw all pieces in player hand
