@@ -1,10 +1,10 @@
 %:-initialization main.
-%:-dynamic(counter/1).
 :-include('board.pl').
 :-include('interface.pl').
 :-dynamic(playerList/1).
 
 changeOwner(tile(_,T,D),P,tile(P,T,D)).
+changeValue(tile(P,_,D),T,tile(P,T,D)).
 
 changeOwnerLine([E1|Es],0,NewOwner,[H|Es]):- changeOwner(E1,NewOwner,H).
 changeOwnerLine([E1|Es],Index,NewOwner,[E1|Result]):-Index>0,
@@ -158,7 +158,7 @@ game(Board, P1Hand, P2Hand, TilePool, [P1|P2]):-
     getNewTileCoord(P2C, P2R),
     placeTile(Board1, Tile2, P2R, P2C, NewBoard),
     displayBoard(NewBoard), nl.
-    
+
 /*
 selectTile([Hand|HandS], 0, Hand).
 selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,

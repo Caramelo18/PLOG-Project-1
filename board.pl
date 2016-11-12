@@ -172,18 +172,21 @@ tilePool([t1,t1,t1,t1,t1,t1,t1,
 % todos os quadrados atribuidos a jogadores  e sem pecas em campo.
 
 
-/* testa se posicao esta vazia */
-emptyPlaceLine([E1|Es],0):-getPlayer(E1,P),
-                           P = e.
-emptyPlaceLine([E1|Es],Col):- Col > 0,
+/* retorna peça numa posicao */
+getTileBoardL([E1|_],0, Tile):- assignTile(Tile,E1).
+getTileBoardL([_|Es],Col,Tile):- Col > 0,
                               Col1 is Col -1,
-                              emptyPlaceLine(Es,Col1).
+                              getTileBoardL(Es,Col1,Tile).
 
-emptyPlace([L1|Ls],0,Col):-emptyPlaceLine(L1,Col).
-emptyPlace([L1|Ls],Line,Col):-Line > 0,
+getTileBoard([L1|_],0,Col,Tile):- getTileBoardL(L1,Col,Tile).
+getTileBoard([_|Ls],Line,Col,Tile):-Line > 0,
                               Line1 is Line -1,
-                              emptyPlace(Ls,Line1,Col).
-
+                              getTileBoard(Ls,Line1,Col,Tile).
+/* testa se posicao esta vazia */
+emptyPlace(Board,Row, Col):- getTileBoard(Board,Row,Col,Tile),
+                             getTile(Tile,Test),
+                             Test == e.
+/*_____________________*/
 
 /* testa se o board ta completo */
 boardFull([]).
@@ -192,6 +195,103 @@ boardFull([L1|Ls]):-boardFullLine(L1),!,boardFull(Ls).
 boardFullLine([]).
 boardFullLine([E1|Es]):- getTile(E1,T), integer(T),!, boardFullLine(Es).
 /*_____________________*/
+
+/* detectar e processar Tiles rodeados*/
+
+
+surroundedTiles([],_,_,_).
+surroundedTiles([L1|Ls], [L1N|LsN],Row,Board):-write('INit'),nl,
+                                               surroundedTilesLine(L1,L1N,0,Row,Board),
+                                               Row1 is Row + 1,
+                                               write('ROW '),write(Row),nl,
+                                               surroundedTiles(Ls,LsN,Row1,Board).
+
+surroundedTilesLine([],_,_,_,_).
+surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):-      write('Col1 '),write(Col),nl, ( checkEmpty(E1) ; checkConquered(E1) ),!,
+                                                            write(E1),nl,
+                                                            assignTile(E1,E1N),
+                                                            Col1 is Col +1,
+                                                            surroundedTilesLine(Es,EsN,Col1,Row,Board).
+
+surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):-   write('Col2 '),write(Col),nl,Col1 is Col +1,
+                                                         Row1 is Row +1,
+                                                         Row2 is Row -1,
+                                                         Col2 is Col -1,
+
+                                                         assertLeft(Board,Row,Col2),
+                                                         assertRigth(Board,Row,Col1),
+                                                         assertUp(Board,Row2,Col),
+                                                         assertUpL(Board,Row2,Col2),
+                                                         assertUpR(Board,Row2,Col1),
+                                                         assertDown(Board,Row1,Col),
+                                                         assertDownL(Board,Row1,Col2),
+                                                         assertDownR(Board,Row1,Col1),!,
+
+
+                                                        changeToFinal(E1,E1N),
+
+                                                        surroundedTilesLine(Es,EsN,Col1,Row,Board).
+
+surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):- Col1 is Col +1,
+                                                       assignTile(E1,E1N),
+                                                       surroundedTilesLine(Es,EsN,Col1,Row,Board).
+
+
+
+
+
+checkEmpty(E1):-getTile(E1,T),
+                 T=e.
+checkNotEmpty(E1):-getTile(E1,T),
+                    T \== e.
+
+checkConquered(E1):-getTile(E1,T),
+                    integer(T).
+
+assertNotEmpty(Board, Row, Col):-getTileBoard(Board,Row,Col,Tile), checkNotEmpty(Tile).
+
+assertLeft(_,_,Col):- write('left '), write(Col),nl, Col < 0.
+assertLeft(Board,Row,Col):- write('left '), write(Col),nl, assertNotEmpty(Board,Row,Col).
+
+assertRigth(_,_,Col):- write('rigth1 '), write(Col),nl, Col > 5.
+assertRigth(Board,Row,Col):- write('rigth2 '), write(Col),nl,assertNotEmpty(Board,Row,Col).
+
+assertUp(_,Row,_):- write('UP '),nl,   Row < 0.
+assertUp(Board,Row,Col):-    assertNotEmpty(Board,Row,Col).
+
+assertUpL(_,_,Col):-  write('UPL '), write(Col),nl, Col < 0.
+assertUpL(_,Row,_):-   Row < 0.
+assertUpL(Board,Row,Col):-   assertNotEmpty(Board,Row,Col).
+
+assertUpR(_,_,Col):-   Col > 5.
+assertUpR(_,Row,_):-   Row < 0.
+assertUpR(Board,Row,Col):-   assertNotEmpty(Board,Row,Col).
+
+assertDown(_,Row,_):-  Row > 5.
+assertDown(Board,Row,Col):-  assertNotEmpty(Board,Row,Col).
+
+assertDownL(_,_,Col):- Col < 0.
+assertDownL(_,Row,_):- Row > 5.
+assertDownL(Board,Row,Col):- assertNotEmpty(Board,Row,Col).
+
+assertDownR(_,_,Col):- write('DownR'), write(Col),nl,Col > 5.
+assertDownR(_,Row,_):- write('DownR'), write(Row),nl,Row > 5.
+assertDownR(Board,Row,Col):- write('DownR'),nl,assertNotEmpty(Board,Row,Col).
+/*_____________________*/
+
+
+finalValue(t10,10).
+finalValue(t8,8).
+finalValue(t4,4).
+finalValue(t3,3).
+finalValue(t2,2).
+finalValue(t1,1).
+
+changeToFinal(E1,E1N):-getTile(E1,T), finalValue(T,V), changeValue(E1,V,E1N).
+/*____________________*/
+
+
+
 
 maketile(P,T,D, tile(P,T,D)).
 
@@ -210,3 +310,6 @@ tboard:- board(X), changeOwnerBoard(X,1,3,c,R), write(R), nl, display_board(R,1)
 
 tfull:-fullboard(X),boardFull(X).
 tempty:-testboard(X),emptyPlace(X,1,1).
+tempty2:-testboard(X),emptyPlace(X,5,5).
+
+tsur:-testboard(X),surroundedTiles(X,R,0,X),displayBoard(X),displayBoard(R),nl, write(R).
