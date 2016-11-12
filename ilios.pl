@@ -43,15 +43,16 @@ getRandomTile(Tile,Pool, R, Size):- getRandom(LineNum, Size), getRandomTile(Line
 assignTile(Tile, Tile).
 createTile(Tile, Player, Type):- assignTile(tile(Player, Type, _), Tile).
 
-getPlayerStartHand(Player, [Hand], 0, Pool, NewPool):- getRandomTile(Type,Pool, NewPool, 30), %TODO - fix size - pool does not start always with size 36
-                                                       createTile(Hand, Player, Type).
-getPlayerStartHand(Player, [Hand|Hands], Num, Pool, NewPool):- Num > 0,
-                                                Size is 36 - 3 + Num,
+getPlayerStartHand(Player, [Hand], 0, Pool, NewPool, PoolSize):- NewPoolSize is PoolSize - 3, getRandomTile(Type,Pool, NewPool, NewPoolSize),
+                                                                 createTile(Hand, Player, Type).
+getPlayerStartHand(Player, [Hand|Hands], Num, Pool, NewPool, PoolSize):- Num > 0,
+                                                Size is PoolSize - 3 + Num,
                                                 getRandomTile(Type,Pool, TPool, Size),
                                                 createTile(Hand, Player, Type),
                                                 Num1 is Num -1,
-                                                getPlayerStartHand(Player, Hands, Num1,TPool,NewPool).
-getPlayerStartHand(Player, Hand, Pool, NewPool):- getPlayerStartHand(Player, Hand, 2, Pool, NewPool).
+                                                getPlayerStartHand(Player, Hands, Num1,TPool,NewPool, PoolSize).
+getPlayerStartHand(Player, Hand, Pool, NewPool, PoolSize):- getPlayerStartHand(Player, Hand, 2, Pool, NewPool, PoolSize).
+
 
 
 removeTilePlayerHand(Tile, [Hand|Hands], Hands, 0):- assignTile(Hand, Tile).
@@ -59,7 +60,8 @@ removeTilePlayerHand(Tile, [Hand|Hands], [Hand|NewHands], TileNum):- TileNum > 0
                                                                         TileNum1 is TileNum -1,
                                                                         removeTilePlayerHand(Tile, Hands, NewHands, TileNum1).
 
-addTilePlayerHand(NewPool, Player, Hand, NewHand):- getRandomTile(Type, NewPool), createTile(Tile, Player, Type), append([Tile], Hand, NewHand), nl.
+addTilePlayerHand(Pool, PoolSize, NewPool, Player, Hand, NewHand):- getRandomTile(Type, Pool, NewPool, PoolSize), createTile(Tile, Player, Type), append([Tile], Hand, NewHand), nl.
+
 displayboard:- board(X), display_first_line, display_board(X, 1).
 
 gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeOwnerBoard(X, 4, 2, b, T), display_first_line, display_board(T, 1).
@@ -70,10 +72,11 @@ getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), writ
 %testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
 
 tph([tile(a,t2,r), tile(a,t2,l)]).
-%testaddplayertile:- tph(Hand), addTilePlayerHand(NewPool, a, Hand, NewHand), displayPlayerHand(NewHand, 'A').
+testaddplayertile:- tilePool(Pool), tph(Hand), write(Pool), nl, addTilePlayerHand(Pool, 36, NewPool, 'A', Hand, NewHand), write(NewPool), nl, displayPlayerHand(NewHand, 'A').
 
 getTilePoint(Tile, Value):- getTile(Tile, Type), integer(Type), Value is Type.
 getTilePoint(_, Value):- Value is 0.
+
 
 updatePoints(Base, Sum, Total):- Total is Base + Sum.
 
@@ -95,6 +98,10 @@ totalPoints(ScoreA, ScoreB):- testboard(Board), totalPoints(Board, 0, 0, ScoreA,
 testgettotalpoints:- totalPoints(ScoreA, ScoreB), write('Points A: '), write(ScoreA), nl, write('Points B: '), write(ScoreB).
 
 
+rotateTile(tile(P, t1, _), NewTile):- getTileDirection(t1, Dir), assignTile(tile(P, t1, Dir), NewTile).
+rotateTile(tile(P, t2, _), NewTile):- getTileDirection(t2, Dir), assignTile(tile(P, t2, Dir), NewTile).
+rotateTile(tile(P, t3, _), NewTile):- getTileDirection(t3, Dir), assignTile(tile(P, t3, Dir), NewTile).
+rotateTile(Tile, Tile).
 
 /* GAME
 
@@ -125,8 +132,8 @@ playerStartTurn(Player,Board,NewBoard):-getNewTileCoord(Col, Row),
 startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
     board(B), tilePool(Pool),
     drawFirstPlayer([P1|[P2]]),
-    getPlayerStartHand(P1, P1Hand, Pool, NewPool),
-    getPlayerStartHand(P2, P2Hand, NewPool, PoolF),
+    getPlayerStartHand(P1, P1Hand, Pool, NewPool, 36),
+    getPlayerStartHand(P2, P2Hand, NewPool, PoolF, 33),nl,
     displayBoard(B), nl,
     showStarterPlayer(P1), nl,
     showPlace2STiles(P1),
@@ -144,19 +151,27 @@ startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
 
     displayBoard(B3), nl.
 
-
-game(Board, P1Hand, P2Hand, TilePool, [P1|P2]):-
+game(Board, P1Hand, P2Hand, TilePool, PoolSize, [P1|[P2]]):-
     displayPlayerHand(P1Hand, P1),
     getNumTile(P1TN),
     removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
     getNewTileCoord(P1C, P1R),
-    placeTile(Board, Tile, P1R, P1C, Board1),
+    rotateTile(Tile, RTile),
+    placeTile(Board, RTile, P1R, P1C, Board1),
+    addTilePlayerHand(TilePool, PoolSize, TilePool1, P1, NP1Hand, NNP1Hand),
+    PoolSize1 is PoolSize - 1,
+
     displayBoard(Board1), nl,
+
     displayPlayerHand(P2Hand, P2),
     getNumTile(P2TN),
     removeTilePlayerHand(Tile2, P2Hand, NP2Hand, P2TN),
     getNewTileCoord(P2C, P2R),
-    placeTile(Board1, Tile2, P2R, P2C, NewBoard),
+    rotateTile(Tile2, RTile2),
+    placeTile(Board1, RTile2, P2R, P2C, NewBoard),
+    addTilePlayerHand(TilePool1, PoolSize1, TilePool2, P2, NP2Hand, NNP2Hand),
+    PoolSize2 is PoolSize1 - 1,
+
     displayBoard(NewBoard), nl.
 
 /*
@@ -164,4 +179,4 @@ selectTile([Hand|HandS], 0, Hand).
 selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,
                                       selectTile(HandS, Num1, Tile).
 */
-test:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, Players).
+test:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, 30, Players).
