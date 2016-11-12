@@ -12,12 +12,12 @@ board([[tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  ti
         [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)],
         [tile(e,e,e),     tile(e,e,e), tile(e,e,e), tile(e,e,e), tile(e,e,e),  tile(e,e,e)]]).
 
-testboard([[tile('a',t1,u),     tile('A',1,l), tile('A',1,r), tile('a',t1,d), tile(e,e,e),  tile(e,e,e)],
-           [tile('a',t2,l),     tile('a',t2,l), tile('a',t2,r), tile('a',t2,r), tile(e,e,e),  tile(e,e,e)],
-           [tile('a',t3,u),     tile('a',t3,l), tile('A',3,r), tile('a',t3,d), tile(e,e,e),  tile(e,e,e)],
-           [tile('a',t4,u),     tile('a',t4,l), tile('a',t4,r), tile('a',t4,d), tile(e,e,e),  tile(e,e,e)],
-           [tile('a',t8,u),     tile('a',t8,l), tile('B',8,r), tile('a',t8,d), tile(e,e,e),  tile(e,e,e)],
-           [tile('a',t10,u),    tile('a',t10,l),tile('a',t10,r),tile('a',t10,d),tile('A', 8, s),  tile(e,e,e)]]).
+testboard([[tile('A',t1,u),     tile('A', 1,l), tile('A',1,r), tile('B',t1,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('A',t2,l),     tile('A',t2,l), tile('a',t2,r), tile('a',t2,r), tile(e,e,e),  tile(e,e,e)],
+           [tile('A',t3,u),     tile('A',t3,l), tile('A',3,r), tile('a',t3,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('A',t4,u),     tile('A',t4,l), tile('a',t4,r), tile('a',t4,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('A',t8,u),     tile('A',t8,l), tile('B',8,r), tile('a',t8,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('A',t10,u),    tile('A',t10,l),tile('a',t10,r),tile('a',t10,d),tile('A', 8, s),  tile(e,e,e)]]).
 
 
 finalboard([[tile(a,1,u),     tile(a,1,l), tile(a,1,r), tile(a,1,d), tile(a,1,e),  tile(a,1,e)],
@@ -175,13 +175,13 @@ tilePool([t1,t1,t1,t1,t1,t1,t1,
 /* retorna peça numa posicao */
 getTileBoardL([E1|_],0, Tile):- assignTile(Tile,E1).
 getTileBoardL([_|Es],Col,Tile):- Col > 0,
-                              Col1 is Col -1,
-                              getTileBoardL(Es,Col1,Tile).
+                                 Col1 is Col -1,
+                                 getTileBoardL(Es,Col1,Tile).
 
 getTileBoard([L1|_],0,Col,Tile):- getTileBoardL(L1,Col,Tile).
 getTileBoard([_|Ls],Line,Col,Tile):-Line > 0,
-                              Line1 is Line -1,
-                              getTileBoard(Ls,Line1,Col,Tile).
+                                    Line1 is Line -1,
+                                    getTileBoard(Ls,Line1,Col,Tile).
 /* testa se posicao esta vazia */
 emptyPlace(Board,Row, Col):- getTileBoard(Board,Row,Col,Tile),
                              getTile(Tile,Test),

@@ -128,6 +128,55 @@ drawFirstPlayer([Pl|Ps]):- random(0, 2, P), pickFirstPlayer(P, [Pl|Ps]).
 
 playerStartTurn(Player,Board,NewBoard):-getNewTileCoord(Col, Row),
                                         placeTile(Board, tile(Player,t10,u), Row, Col, NewBoard).
+
+
+getPlayerFromPlace(Board, Player, Line, Column):- getTileBoard(Board, Line, Column, Tile),  getPlayer(Tile, Player).
+getTypeFromPlace(Board, Type, Line, Column):- getTileBoard(Board, Line, Column, Tile), getTile(Tile, Type).
+
+validPlacement(Board, tile(P,t1, u), Line, Col):- Line > 0, LineU is Line - 1, getPlayerFromPlace(Board, Player, LineU, Col), Player \= P, Player \= e,
+                                                                               getTypeFromPlace(Board, Type, LineU, Col), \+integer(Type).
+validPlacement(Board, tile(P,t1, d), Line, Col):- Line < 5, LineD is Line + 1, getPlayerFromPlace(Board, Player, LineD, Col), Player \= P, Player \= e,
+                                                                               getTypeFromPlace(Board, Type, LineD, Col), \+integer(Type).
+validPlacement(Board, tile(P,t1, r), Line, Col):- Col <  5, ColR is Col + 1, getPlayerFromPlace(Board, Player, Line, ColR), Player \= P, Player \= e,
+                                                                             getTypeFromPlace(Board, Type, Line, ColR), \+integer(Type).
+validPlacement(Board, tile(P,t1, l), Line, Col):- Col >  0, ColL is Col - 1, getPlayerFromPlace(Board, Player, Line, ColL), Player \= P, Player \= e,
+                                                                             getTypeFromPlace(Board, Type, Line, ColL), \+integer(Type).
+
+validPlacement(Board, tile(P,t2, r), Line, Col):- (LineUL is Line - 1, ColUL is Col -1, getPlayerFromPlace(Board, Player, LineUL, ColUL), Player \= P, Player \= e,
+                                                                                       getTypeFromPlace(Board, Type, LineUL, ColUL), \+integer(Type));
+                                                  (LineDR is Line + 1, ColDR is Col +1, getPlayerFromPlace(Board, Player, LineDR, ColDR), Player \= P, Player \= e,
+                                                                                        getTypeFromPlace(Board, Type, LineDR, ColDR), \+integer(Type)).
+
+validPlacement(Board, tile(P,t2, l), Line, Col):- (LineDL is Line + 1, ColDL is Col -1, getPlayerFromPlace(Board, Player, LineDL, ColDL), Player \= P, Player \= e,
+                                                                                        getTypeFromPlace(Board, Type, LineDL, ColDL), \+integer(Type));
+                                                  (LineUR is Line - 1, ColUR is Col +1, getPlayerFromPlace(Board, Player, LineUR, ColUR), Player \= P, Player \= e,
+                                                                                        getTypeFromPlace(Board, Type, LineUR, ColUR), \+integer(Type)).
+
+validPlacement(Board, tile(P,t3, l), Line, Col):- validPlacement(Board, tile(P,t1, u), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, l), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, d), Line, Col).
+
+validPlacement(Board, tile(P,t3, u), Line, Col):- validPlacement(Board, tile(P,t1, u), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, l), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, r), Line, Col).
+
+validPlacement(Board, tile(P,t3, r), Line, Col):- validPlacement(Board, tile(P,t1, u), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, r), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, d), Line, Col).
+
+validPlacement(Board, tile(P,t3, d), Line, Col):- validPlacement(Board, tile(P,t1, r), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, d), Line, Col);
+                                                  validPlacement(Board, tile(P,t1, l), Line, Col).
+
+validPlacement(Board, tile(P,t4, _), Line, Col):- validPlacement(Board, tile(P,t2, l), Line, Col);
+                                                  validPlacement(Board, tile(P,t2, r), Line, Col).
+
+validPlacement(Board, tile(P,t8, _), Line, Col):-  validPlacement(Board, tile(P,t4, u), Line, Col);
+                                                   validPlacement(Board, tile(P,t3, u), Line, Col);
+                                                   validPlacement(Board, tile(P,t3, d), Line, Col).
+
+testvalidplacement:- testboard(Board), validPlacement(Board, tile('B', t8, l), 5, 2).
+
 %redefinir tabuleiro com retract
 startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
     board(B), tilePool(Pool),
