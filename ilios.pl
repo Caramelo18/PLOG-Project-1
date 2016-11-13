@@ -128,8 +128,7 @@ drawFirstPlayer([Pl|Ps]):- random(0, 2, P), pickFirstPlayer(P, [Pl|Ps]).
 
 
 
-playerStartTurn(Player,Board,NewBoard):-getNewTileCoord(Col, Row),
-                                        placeTile(Board, tile(Player,t10,u), Row, Col, NewBoard).
+
 
 
 getPlayerFromPlace(Board, Player, Line, Column):- getTileBoard(Board, Line, Column, Tile), getPlayer(Tile, Player).
@@ -180,9 +179,19 @@ isAttacking(Board, tile(P,t8, _), Line, Col):-  isAttacking(Board, tile(P,t4, u)
 validPlacement(Board, tile(P, Tile, Dir), Line, Col):- emptyPlace(Board, Line, Col), isAttacking(Board, tile(P, Tile, Dir), Line, Col).
 testvalidplacement:- testboard(Board), validPlacement(Board, tile('B', t8, l), 5, 2).
 
-%redefinir tabuleiro com retract
+
+
+
+playerStartTurn(Player,Board,NewBoard):-repeat,
+                                        getNewTileCoord(Col, Row),
+                                        emptyPlace(Board,Row,Col),
+                                        placeTile(Board, tile(Player,t10,u), Row, Col, NewBoard).
+
+
+
+
 startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
-    board(B), tilePool(Pool),
+    testboard(B), tilePool(Pool),%TODO CHANGE
     drawFirstPlayer([P1|[P2]]),
     getPlayerStartHand(P1, P1Hand, Pool, NewPool, 36),
     getPlayerStartHand(P2, P2Hand, NewPool, PoolF, 33),nl,
@@ -192,7 +201,7 @@ startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
 
     %P1 places 2 type 10tiles
     playerStartTurn(P1,B,B1),
-
+    displayBoard(B1), nl,
     playerStartTurn(P1,B1,B2),
 
     displayBoard(B2), nl,
@@ -203,33 +212,43 @@ startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
 
     displayBoard(B3), nl.
 
+
+playerTurn(Player, PHand, PNHand, Board, NewBoard,PoolSize,NPoolSize,TilePool,NTilePool):-
+                                                   displayPlayerHand(PHand, Player),
+                                                   repeat,
+                                                   getNumTile(P1TN),
+                                                   removeTilePlayerHand(Tile, PHand, NP1Hand, P1TN),
+                                                   getNewTileCoord(P1C, P1R),
+                                                   rotateTile(Tile, RTile),
+                                                  (
+                                                   (
+                                                     listValidMoves(Board,Result,Player),
+                                                     Result == [],
+                                                     emptyPlace(Board,P1R,P1C)
+                                                   );
+                                                     validPlacement(Board, RTile, P1R, P1C)
+                                                  ),
+                                                   placeTile(Board, RTile, P1R, P1C, Board1),
+                                                   addTilePlayerHand(TilePool, PoolSize, NTilePool, Player, NP1Hand, PNHand),
+                                                   surroundedTiles(Board1,NewBoard,0,Board1),
+                                                   NPoolSize is PoolSize - 1.
+
+
 game(Board, P1Hand, P2Hand, TilePool, PoolSize, [P1|[P2]]):-
-    displayPlayerHand(P1Hand, P1),
-    getNumTile(P1TN),
-    removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
-    getNewTileCoord(P1C, P1R),
-    rotateTile(Tile, RTile),
-    validPlacement(Board, RTile, P1R, P1C),
-    placeTile(Board, RTile, P1R, P1C, Board1),
-    addTilePlayerHand(TilePool, PoolSize, TilePool1, P1, NP1Hand, NNP1Hand),
-    PoolSize1 is PoolSize - 1,
+
+    playerTurn(P1, P1Hand, NNP1Hand, Board, Board1,PoolSize, PoolSize1, TilePool,TilePool1),
 
     displayBoard(Board1), nl,
 
-    displayPlayerHand(P2Hand, P2),
-    getNumTile(P2TN),
-    removeTilePlayerHand(Tile2, P2Hand, NP2Hand, P2TN),
-    getNewTileCoord(P2C, P2R),
-    rotateTile(Tile2, RTile2),
-    validPlacement(Board1, RTile2, P2R, P2C),
-    placeTile(Board1, RTile2, P2R, P2C, NewBoard),
-    addTilePlayerHand(TilePool1, PoolSize1, TilePool2, P2, NP2Hand, NNP2Hand),
-    PoolSize2 is PoolSize1 - 1,
+    playerTurn(P2, P2Hand, NNP2Hand, Board1, NewBoard,PoolSize1, PoolSize2, TilePool1,TilePool2),
 
     displayBoard(NewBoard), nl,
 
-
-    !, game(NewBoard, NNP1Hand, NNP2Hand, TilePool2, PoolSize2, [P1|[P2]]).
+    !,(
+        gameEnded(NewBoard,P1,P2)
+        ;
+        !,game(NewBoard, NNP1Hand, NNP2Hand, TilePool2, PoolSize2, [P1|[P2]])
+      ).
 
 /*
 selectTile([Hand|HandS], 0, Hand).
@@ -238,7 +257,7 @@ selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,
 */
 test:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, 30, Players).
 
-gameEnded(Board, P1, P2):- \+boardFull(Board), !, totalPoints(Board, ScoreA, ScoreB), showWinner(P1, P2, ScoreA, ScoreB), nl, showScore(P1, P2, ScoreA, ScoreB), !.
+gameEnded(Board, P1, P2):- boardFull(Board), !, totalPoints(Board, ScoreA, ScoreB), showWinner(P1, P2, ScoreA, ScoreB), nl, showScore(P1, P2, ScoreA, ScoreB), !.
 
 
 

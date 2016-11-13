@@ -88,11 +88,11 @@ optionSelect(Min,Max, Value):- write('Insert an option: '),
                             H =< Max,
                             Value is H.
 
-showStarterPlayer(Player):- write('     Player '), write(Player), write(' starts').
+showStarterPlayer(Player):- write('Player '), write(Player), write(' starts').
 
-showPlace2STiles(Player):- write('     Player '), write(Player), write(' place 2 starting tiles. ').
+showPlace2STiles(Player):- write('Player '), write(Player), write(' place 2 starting tiles. ').
 
-showPlace1STiles(Player):- write('     Player '), write(Player), write(' place 1 starting tile. ').
+showPlace1STiles(Player):- write('Player '), write(Player), write(' place 1 starting tile. ').
 
 displayStart:- write('----------------------------'), nl,
                write('||       || ILIOS ||      ||'), nl,

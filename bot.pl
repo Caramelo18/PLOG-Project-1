@@ -15,9 +15,9 @@ listValidMovesLine([],[],_,_,_,_).
 listValidMovesLine([_|Es],Result,Row,Col,Player,Board):-  Col1 is Col+1,
                                                             %write('col '),write(Col),nl,
                                                             checkIsEnemy(Board,Row,Col,Player),
-                                                            listValidPos(Board,Row,Col,R1,Player),
+                                                            listValidPos(Board,Row,Col,R1),
                                                             listValidMovesLine(Es,Rs,Row,Col1,Player,Board),
-                                                            append(R1,Rs,Result),write('append moves line'),nl,write(Result),nl.
+                                                            append(R1,Rs,Result).
 
 listValidMovesLine([_|Es],Result,Row,Col,Player,Board):-  Col1 is Col+1,
                                                            listValidMovesLine(Es,Result,Row,Col1,Player,Board).
@@ -26,7 +26,7 @@ checkIsEnemy(Board,Row,Col,Player):-  getTileBoard(Board,Row,Col,Tile),
                                       assertEnemy(Tile,Player).
 
 
-listValidPos(Board,Row,Col,Result,Player):-  Up is Row -1,
+listValidPos(Board,Row,Col,Result):-  Up is Row -1,
                                              Down is Row + 1,
                                              Left is Col -1,
                                              Rigth is Col +1,
@@ -49,7 +49,7 @@ listValidPos(Board,Row,Col,Result,Player):-  Up is Row -1,
                                              append(T1,T2,F1),
                                              append(T3,T4,F2),
 
-                                             append(F1,F2,Result), write('append listValidPos'),nl,write(Result),nl.
+                                             append(F1,F2,Result).
 
 getValidPos(Board,Row,Col,Result,Dir):-  Row < 6, Col < 6,
                                          Row > -1, Col > -1,
