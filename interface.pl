@@ -29,35 +29,37 @@ inputCoords(Row,Col):-  %read row
                         Col is RCol - 1. % A = 41.
 
 getNewTileCoord(Col,Row):-
-    repeat,
     write('Insert coordinates to place tile: [ Col, Row ]'),
     inputCoords(Col,Row),
     clearInput,
-    Row < 6, Col < 6.
+    Row < 6, Col < 6, Row > -1, Col > -1.
 
 getNumTile(Num):-
     nl, write('Select tile to place (0, 1, 2): '),
     getInt(Num),
-    Num >= 0, Num < 3,
-    clearInput.
+    clearInput,
+    Num >= 0, Num < 3.
+
 
 assignDirection2(108, l).
 assignDirection2(114, r).
+
 assignDirection1(117, u).
 assignDirection1(100, d).
 assignDirection1(108, l).
 assignDirection1(114, r).
+
 assignDirection3(117, u).
 assignDirection3(100, d).
 assignDirection3(108, l).
 assignDirection3(114, r).
 
 getTileDirection(t2, Direction):-   write('Insert the desired tile direction (l or r): '),
-                                    getCode(C), assignDirection2(C, Direction), clearInput.
+                                    getCode(C),clearInput,assignDirection2(C, Direction).
 getTileDirection(t1, Direction):-   write('Insert the desired tile direction (l, u, r, d): '),
-                                    getCode(C), assignDirection1(C, Direction), clearInput.
+                                    getCode(C),clearInput,assignDirection1(C, Direction).
 getTileDirection(t3, Direction):-   write('Insert the desired tile direction (l, u, r, d): '),
-                                    getCode(C), assignDirection3(C, Direction), clearInput.
+                                    getCode(C),clearInput, assignDirection3(C, Direction).
 
 getTileDirection(t4, _).
 getTileDirection(t8, _).
@@ -154,3 +156,6 @@ showWinner(P1, P2, P1Score, P2Score):- P2Score > P1Score,
                                        write('Player '), write(P2), write(' is the winner. Congratulations!').
 
 showWinner(P1, P2, P1Score, P2Score):- write('It\'s a tie! Good game!').
+
+
+tDir :-getTileDirection(t2, Direction), write(Direction).

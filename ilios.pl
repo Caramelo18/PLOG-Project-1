@@ -2,7 +2,8 @@
 :-include('board.pl').
 :-include('interface.pl').
 :-dynamic(playerList/1).
-
+:-include('bot.pl').
+:-use_module(library(lists)).
 changeOwner(tile(_,T,D),P,tile(P,T,D)).
 changeValue(tile(P,_,D),T,tile(P,T,D)).
 
@@ -101,7 +102,8 @@ testgettotalpoints:- totalPoints(ScoreA, ScoreB), write('Points A: '), write(Sco
 rotateTile(tile(P, t1, _), NewTile):- getTileDirection(t1, Dir), assignTile(tile(P, t1, Dir), NewTile).
 rotateTile(tile(P, t2, _), NewTile):- getTileDirection(t2, Dir), assignTile(tile(P, t2, Dir), NewTile).
 rotateTile(tile(P, t3, _), NewTile):- getTileDirection(t3, Dir), assignTile(tile(P, t3, Dir), NewTile).
-rotateTile(Tile, Tile).
+rotateTile(tile(P, t4, D), tile(P, t4, D)).
+rotateTile(tile(P, t8, D), tile(P, t8, D)).
 
 /* GAME
 
@@ -244,7 +246,8 @@ testgameended:- finalboard(Board), gameEnded(Board, 'A', 'B').
 
 
 testrepeat:- testboard(Board), playerhand(P1Hand),
-    displayPlayerHand(P1Hand, 'A'),
+        displayPlayerHand(P1Hand, 'A'),
+        repeat,
         getNumTile(P1TN),
         removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
         getNewTileCoord(P1C, P1R),
