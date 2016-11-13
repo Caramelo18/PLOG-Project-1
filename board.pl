@@ -200,20 +200,17 @@ boardFullLine([E1|Es]):- getTile(E1,T), integer(T),!, boardFullLine(Es).
 
 
 surroundedTiles([],_,_,_).
-surroundedTiles([L1|Ls], [L1N|LsN],Row,Board):-write('INit'),nl,
-                                               surroundedTilesLine(L1,L1N,0,Row,Board),
+surroundedTiles([L1|Ls], [L1N|LsN],Row,Board):-surroundedTilesLine(L1,L1N,0,Row,Board),
                                                Row1 is Row + 1,
-                                               write('ROW '),write(Row),nl,
                                                surroundedTiles(Ls,LsN,Row1,Board).
 
 surroundedTilesLine([],_,_,_,_).
-surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):-      write('Col1 '),write(Col),nl, ( checkEmpty(E1) ; checkConquered(E1) ),!,
-                                                            write(E1),nl,
+surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):-      ( checkEmpty(E1) ; checkConquered(E1) ),!,
                                                             assignTile(E1,E1N),
                                                             Col1 is Col +1,
                                                             surroundedTilesLine(Es,EsN,Col1,Row,Board).
 
-surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):-   write('Col2 '),write(Col),nl,Col1 is Col +1,
+surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):-   Col1 is Col +1,
                                                          Row1 is Row +1,
                                                          Row2 is Row -1,
                                                          Col2 is Col -1,
@@ -250,16 +247,16 @@ checkConquered(E1):-getTile(E1,T),
 
 assertNotEmpty(Board, Row, Col):-getTileBoard(Board,Row,Col,Tile), checkNotEmpty(Tile).
 
-assertLeft(_,_,Col):- write('left '), write(Col),nl, Col < 0.
-assertLeft(Board,Row,Col):- write('left '), write(Col),nl, assertNotEmpty(Board,Row,Col).
+assertLeft(_,_,Col):- Col < 0.
+assertLeft(Board,Row,Col):- assertNotEmpty(Board,Row,Col).
 
-assertRigth(_,_,Col):- write('rigth1 '), write(Col),nl, Col > 5.
-assertRigth(Board,Row,Col):- write('rigth2 '), write(Col),nl,assertNotEmpty(Board,Row,Col).
+assertRigth(_,_,Col):- Col > 5.
+assertRigth(Board,Row,Col):- assertNotEmpty(Board,Row,Col).
 
-assertUp(_,Row,_):- write('UP '),nl,   Row < 0.
+assertUp(_,Row,_):- Row < 0.
 assertUp(Board,Row,Col):-    assertNotEmpty(Board,Row,Col).
 
-assertUpL(_,_,Col):-  write('UPL '), write(Col),nl, Col < 0.
+assertUpL(_,_,Col):- Col < 0.
 assertUpL(_,Row,_):-   Row < 0.
 assertUpL(Board,Row,Col):-   assertNotEmpty(Board,Row,Col).
 
@@ -274,9 +271,9 @@ assertDownL(_,_,Col):- Col < 0.
 assertDownL(_,Row,_):- Row > 5.
 assertDownL(Board,Row,Col):- assertNotEmpty(Board,Row,Col).
 
-assertDownR(_,_,Col):- write('DownR'), write(Col),nl,Col > 5.
-assertDownR(_,Row,_):- write('DownR'), write(Row),nl,Row > 5.
-assertDownR(Board,Row,Col):- write('DownR'),nl,assertNotEmpty(Board,Row,Col).
+assertDownR(_,_,Col):- Col > 5.
+assertDownR(_,Row,_):- Row > 5.
+assertDownR(Board,Row,Col):- assertNotEmpty(Board,Row,Col).
 /*_____________________*/
 
 

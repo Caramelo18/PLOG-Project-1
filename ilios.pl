@@ -133,6 +133,7 @@ drawFirstPlayer([Pl|Ps]):- random(0, 2, P), pickFirstPlayer(P, [Pl|Ps]).
 
 getPlayerFromPlace(Board, Player, Line, Column):- getTileBoard(Board, Line, Column, Tile), getPlayer(Tile, Player).
 getTypeFromPlace(Board, Type, Line, Column):- getTileBoard(Board, Line, Column, Tile), getTile(Tile, Type).
+getDirectionFromPlace(Board, Direction, Line, Column):- getTileBoard(Board, Line, Column, Tile), getDirection(Tile, Direction).
 
 isAttacking(Board, tile(P,t1, u), Line, Col):- Line > 0, LineU is Line - 1, getPlayerFromPlace(Board, Player, LineU, Col), Player \= P, Player \= e,
                                                                                getTypeFromPlace(Board, Type, LineU, Col), \+integer(Type).
@@ -181,6 +182,115 @@ testvalidplacement:- testboard(Board), validPlacement(Board, tile('B', t8, l), 5
 
 
 
+attack(Board, tile(P, t1, u), Line, Col, NewBoard):- LineU is Line - 1, getPlayerFromPlace(Board, Player, LineU, Col), Player \= P, Player \= e,
+                                                                        getTypeFromPlace(Board, Type, LineU, Col), \+integer(Type),
+                                                                        getDirectionFromPlace(Board, Direction, LineU, Col),
+                                                                        NewTile = tile(P, Type, Direction),
+                                                                        placeTile(Board, tile(P, t1, u), Line, Col, IBoard),
+                                                                        placeTile(IBoard, NewTile, LineU, Col, NewBoard).
+
+attack(Board, tile(P, t1, d), Line, Col, NewBoard):- LineD is Line + 1, getPlayerFromPlace(Board, Player, LineD, Col), Player \= P, Player \= e,
+                                                                        getTypeFromPlace(Board, Type, LineD, Col), \+integer(Type),
+                                                                        getDirectionFromPlace(Board, Direction, LineD, Col),
+                                                                        NewTile = tile(P, Type, Direction),
+                                                                        placeTile(Board, tile(P, t1, d), Line, Col, IBoard),
+                                                                        placeTile(IBoard, NewTile, LineD, Col, NewBoard).
+
+attack(Board, tile(P, t1, r), Line, Col, NewBoard):- ColR is Col + 1,  getPlayerFromPlace(Board, Player, Line, ColR), Player \= P, Player \= e,
+                                                                        getTypeFromPlace(Board, Type, Line, ColR), \+integer(Type),
+                                                                        getDirectionFromPlace(Board, Direction, Line, ColR),
+                                                                        NewTile = tile(P, Type, Direction),
+                                                                        placeTile(Board, tile(P, t1, r), Line, Col, IBoard),
+                                                                        placeTile(IBoard, NewTile, Line, ColR, NewBoard).
+
+attack(Board, tile(P, t1, l), Line, Col, NewBoard):- ColL is Col - 1, getPlayerFromPlace(Board, Player, Line, ColL), Player \= P, Player \= e,
+                                                                        getTypeFromPlace(Board, Type, Line, ColL), \+integer(Type),
+                                                                        getDirectionFromPlace(Board, Direction, Line, ColL),
+                                                                        NewTile = tile(P, Type, Direction),
+                                                                        placeTile(Board, tile(P, t1, l), Line, Col, IBoard),
+                                                                        placeTile(IBoard, NewTile, Line, ColL, NewBoard).
+
+attack(Board, tile(P,t2, r), Line, Col, NewBoard):- LineUL is Line - 1, ColUL is Col - 1, LineDR is Line + 1, ColDR is Col +1,
+                                                    ((getPlayerFromPlace(Board, Player, LineUL, ColUL), Player \= P, Player \= e,
+                                                                                getTypeFromPlace(Board, Type, LineUL, ColUL), \+integer(Type)),
+                                                    (getPlayerFromPlace(Board, Player, LineDR, ColDR), Player \= P, Player \= e,
+                                                                                getTypeFromPlace(Board, Type2, LineDR, ColDR), \+integer(Type2)),
+                                                            getDirectionFromPlace(Board, DirectionUL, LineUL, ColUL),
+                                                            getDirectionFromPlace(Board, DirectionDR, LineDR, ColDR),
+                                                            TileUL = tile(P, Type, DirectionUL),
+                                                            TileDR = tile(P, Type2, DirectionDR),
+                                                            placeTile(Board, tile(P, t2, r), Line, Col, IBoard),
+                                                            placeTile(IBoard, TileUL, LineUL, ColUL, IBoard2),
+                                                            placeTile(IBoard2, TileDR, LineDR, ColDR, NewBoard));
+                                                    (LineUL is Line - 1, ColUL is Col - 1, getPlayerFromPlace(Board, Player, LineUL, ColUL), Player \= P, Player \= e,
+                                                                                getTypeFromPlace(Board, Type, LineUL, ColUL), \+integer(Type),
+                                                            getDirectionFromPlace(Board, DirectionUL, LineUL, ColUL),
+                                                            TileUL = tile(P, Type, DirectionUL),
+                                                            placeTile(Board, tile(P, t2, r), Line, Col, IBoard),
+                                                            placeTile(IBoard, TileUL, LineUL, ColUL, NewBoard));
+                                                    (LineDR is Line + 1, ColDR is Col +1, getPlayerFromPlace(Board, Player, LineDR, ColDR), Player \= P, Player \= e,
+                                                                                getTypeFromPlace(Board, Type3, LineDR, ColDR), \+integer(Type3),
+                                                            getDirectionFromPlace(Board, DirectionDR, LineDR, ColDR),
+                                                            TileDR = tile(P, Type3, DirectionDR),
+                                                            placeTile(Board, tile(P, t2, r), Line, Col, IBoard),
+                                                            placeTile(IBoard, TileDR, LineDR, ColDR, NewBoard)).
+
+attack(Board, tile(P,t2, l), Line, Col, NewBoard):- LineUR is Line - 1, ColUR is Col + 1, LineDL is Line + 1, ColDL is Col - 1,
+                                                    ((getPlayerFromPlace(Board, Player, LineUR, ColUR), Player \= P, Player \= e,
+                                                                                getTypeFromPlace(Board, Type, LineUR, ColUR), \+integer(Type)),
+                                                     (getPlayerFromPlace(Board, Player, LineDL, ColDL), Player \= P, Player \= e,
+                                                                                getTypeFromPlace(Board, Type2, LineDL, ColDL), \+integer(Type2)),
+                                                            getDirectionFromPlace(Board, DirectionUR, LineUR, ColUR),
+                                                            getDirectionFromPlace(Board, DirectionDL, LineDL, ColDL),
+                                                            TileUR = tile(P, Type, DirectionUR),
+                                                            TileDL = tile(P, Type2, DirectionDL),
+                                                            placeTile(Board, tile(P, t2, l), Line, Col, IBoard),
+                                                            placeTile(IBoard, TileUR, LineUR, ColUR, IBoard2),
+                                                            placeTile(IBoard2, TileDL, LineDL, ColDL, NewBoard));
+                                                    (LineUR is Line - 1, ColUR is Col + 1, getPlayerFromPlace(Board, Player, LineUR, ColUR), Player \= P, Player \= e,
+                                                                                           getTypeFromPlace(Board, Type, LineUR, ColUR), \+integer(Type),
+                                                            getDirectionFromPlace(Board, DirectionUR, LineUR, ColUR),
+                                                            TileUR = tile(P, Type, DirectionUR),
+                                                            placeTile(Board, tile(P, t2, l), Line, Col, IBoard),
+                                                            placeTile(IBoard, TileUR, LineUR, ColUR, NewBoard));
+                                                    (LineDL is Line + 1, ColDL is Col - 1, getPlayerFromPlace(Board, Player, LineDL, ColDL), Player \= P, Player \= e,
+                                                                                        getTypeFromPlace(Board, Type3, LineDL, ColDL), \+integer(Type3),
+                                                                                getDirectionFromPlace(Board, DirectionDL, LineDL, ColDL),
+                                                            TileDL = tile(P, Type3, DirectionDL),
+                                                            placeTile(Board, tile(P, t2, l), Line, Col, IBoard),
+                                                            placeTile(IBoard, TileDL, LineDL, ColDL, NewBoard)).
+
+
+attack(Board, tile(P,t3, l), Line, Col, NewBoard):- attack(Board, tile(P,t1, d), Line, Col, NewBoard1),
+                                                    attack(NewBoard1, tile(P,t1, l), Line, Col, NewBoard2),
+                                                    attack(NewBoard2, tile(P,t1, u), Line, Col, NewBoard3),
+                                                    placeTile(NewBoard3, tile(P, t3, l), Line, Col, NewBoard).
+
+attack(Board, tile(P,t3, u), Line, Col, NewBoard):- attack(Board, tile(P,t1, l), Line, Col, NewBoard1),
+                                                    attack(NewBoard1, tile(P,t1, u), Line, Col, NewBoard2),
+                                                    attack(NewBoard2, tile(P,t1, r), Line, Col, NewBoard3),
+                                                    placeTile(NewBoard3, tile(P, t3, u), Line, Col, NewBoard).
+
+attack(Board, tile(P,t3, r), Line, Col, NewBoard):- attack(Board, tile(P,t1, u), Line, Col, NewBoard1),
+                                                    attack(NewBoard1, tile(P,t1, r), Line, Col, NewBoard2),
+                                                    attack(NewBoard2, tile(P,t1, d), Line, Col, NewBoard3),
+                                                    placeTile(NewBoard3, tile(P, t3, r), Line, Col, NewBoard).
+
+attack(Board, tile(P,t3, d), Line, Col, NewBoard):- attack(Board, tile(P,t1, r), Line, Col, NewBoard1),
+                                                    attack(NewBoard1, tile(P,t1, d), Line, Col, NewBoard2),
+                                                    attack(NewBoard2, tile(P,t1, l), Line, Col, NewBoard3),
+                                                    placeTile(NewBoard3, tile(P, t3, d), Line, Col, NewBoard).
+
+attack(Board, tile(P,t4, _), Line, Col, NewBoard):- attack(Board, tile(P,t2, l), Line, Col, NewBoard1),
+                                                    attack(NewBoard1, tile(P, t2, r), Line, Col, NewBoard2),
+                                                    placeTile(NewBoard2, tile(P, t4, u), Line, Col, NewBoard).
+
+attack(Board, tile(P,t8, _), Line, Col, NewBoard):- attack(Board, tile(P,t4, u), Line, Col, NewBoard1),
+                                                    attack(NewBoard1, tile(P,t3, u), Line, Col, NewBoard2),
+                                                    attack(NewBoard2, tile(P,t1, d), Line, Col, NewBoard3),
+                                                    placeTile(NewBoard3, tile(P, t8, u), Line, Col, NewBoard).
+
+
 
 playerStartTurn(Player,Board,NewBoard):-repeat,
                                         getNewTileCoord(Col, Row),
@@ -191,7 +301,7 @@ playerStartTurn(Player,Board,NewBoard):-repeat,
 
 
 startGame(B3, P1Hand, P2Hand, PoolF, [P1|[P2]]):-
-    testboard(B), tilePool(Pool),%TODO CHANGE
+    board(B), tilePool(Pool),%TODO CHANGE
     drawFirstPlayer([P1|[P2]]),
     getPlayerStartHand(P1, P1Hand, Pool, NewPool, 36),
     getPlayerStartHand(P2, P2Hand, NewPool, PoolF, 33),nl,
@@ -224,11 +334,15 @@ playerTurn(Player, PHand, PNHand, Board, NewBoard,PoolSize,NPoolSize,TilePool,NT
                                                    (
                                                      listValidMoves(Board,Result,Player),
                                                      Result == [],
-                                                     emptyPlace(Board,P1R,P1C)
+                                                     emptyPlace(Board,P1R,P1C),
+                                                     placeTile(Board, RTile, P1R, P1C, Board1)
                                                    );
-                                                     validPlacement(Board, RTile, P1R, P1C)
+                                                   (
+                                                     validPlacement(Board, RTile, P1R, P1C), write('VALID'), nl,
+                                                     attack(Board, RTile, P1R, P1C, Board1)
+                                                   )
                                                   ),
-                                                   placeTile(Board, RTile, P1R, P1C, Board1),
+
                                                    addTilePlayerHand(TilePool, PoolSize, NTilePool, Player, NP1Hand, PNHand),
                                                    surroundedTiles(Board1,NewBoard,0,Board1),
                                                    NPoolSize is PoolSize - 1.

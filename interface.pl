@@ -29,7 +29,7 @@ inputCoords(Row,Col):-  %read row
                         Col is RCol - 1. % A = 41.
 
 getNewTileCoord(Col,Row):-
-    write('Insert coordinates to place tile: [ Col, Row ]'),
+    write('Insert coordinates to place tile (Col, Row): '),
     inputCoords(Col,Row),
     clearInput,
     Row < 6, Col < 6, Row > -1, Col > -1.
