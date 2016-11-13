@@ -16,16 +16,16 @@ testboard([[tile('A',t1,u),     tile('A', 1,l), tile('A',1,r), tile('B',t1,d), t
            [tile('A',t2,l),     tile('A',t2,l), tile('a',t2,r), tile('a',t2,r), tile(e,e,e),  tile(e,e,e)],
            [tile('A',t3,u),     tile('A',t3,l), tile('A',3,r), tile('a',t3,d), tile(e,e,e),  tile(e,e,e)],
            [tile('A',t4,u),     tile('A',t4,l), tile('a',t4,r), tile('a',t4,d), tile(e,e,e),  tile(e,e,e)],
-           [tile('A',t8,u),     tile('A',t8,l), tile('B',8,r), tile('a',t8,d), tile(e,e,e),  tile(e,e,e)],
-           [tile('A',t10,u),    tile('A',t10,l),tile('a',t10,r),tile('a',t10,d),tile('A', 8, s),  tile(e,e,e)]]).
+           [tile('A',t8,u),     tile('A',t8,l), tile('B',8,r), tile('A',t8,d), tile(e,e,e),  tile(e,e,e)],
+           [tile('A',t10,u),    tile('A',t10,l),tile(e,e,e),tile('a',t10,d),tile('A', 8, s),  tile(e,e,e)]]).
 
 
-finalboard([[tile(a,1,u),     tile(a,1,l), tile(a,1,r), tile(a,1,d), tile(a,1,e),  tile(a,1,e)],
-            [tile(a,2,l),     tile(a,2,l), tile(a,2,r), tile(a,2,r), tile(a,1,e),  tile(a,1,e)],
-            [tile(a,3,u),     tile(a,3,l), tile(a,3,r), tile(a,3,d), tile(a,1,e),  tile(a,1,e)],
-            [tile(a,4,u),     tile(a,4,l), tile(a,4,r), tile(a,4,d), tile(a,1,e),  tile(a,1,e)],
-            [tile(a,8,u),     tile(a,8,l), tile(a,8,r), tile(a,8,d), tile(a,1,e),  tile(a,1,e)],
-            [tile(a,10,u),    tile(a,10,l),tile(a,10,r),tile(a,10,d),tile(a,1,e),  tile(a,1,e)]]).
+finalboard([[tile('A',1,u),     tile('A',1,l), tile('A',1,r), tile('A',1,d), tile('A',1,e),  tile('A',1,e)],
+            [tile('A',2,l),     tile('A',2,l), tile('A',2,r), tile('A',2,r), tile('A',1,e),  tile('A',1,e)],
+            [tile('A',3,u),     tile('A',3,l), tile('A',3,r), tile('A',3,d), tile('A',1,e),  tile('A',1,e)],
+            [tile('B',4,u),     tile('A',4,l), tile('A',4,r), tile('A',4,d), tile('A',1,e),  tile('A',1,e)],
+            [tile('A',8,u),     tile('A',8,l), tile('A',8,r), tile('A',8,d), tile('A',1,e),  tile('A',1,e)],
+            [tile('A',10,u),    tile('A',10,l),tile('A',10,r),tile('A',10,d),tile('A',1,e),  tile('A',1,e)]]).
 
 
 display_board([],_):-nl.

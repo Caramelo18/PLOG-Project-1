@@ -141,6 +141,16 @@ confGame(GameType,BotLevel):- displayStart,
 
 %testes
 
-playerhand([tile(a,t2,u),     tile(a,t2,l), tile(a,t2,r)]).
+playerhand([tile(a,t2,l),     tile(a,t2,l), tile(a,t2,r)]).
 thand:-playerhand(X), write(X), nl, displayPlayerHand(X,'Player 1').
 tinput:- getNewTileCoord(X,Y),write(X), nl, write(Y),nl.
+
+showScore(P1, P2, P1Score, P2Score):- write('Player '), write(P1), write(' score:'), write(P1Score), nl,
+                                      write('Player '), write(P2), write(' score:'), write(P2Score).
+showWinner(P1, P2, P1Score, P2Score):- P1Score > P2Score,
+                                       write('Player '), write(P1), write(' is the winner. Congratulations!').
+
+showWinner(P1, P2, P1Score, P2Score):- P2Score > P1Score,
+                                       write('Player '), write(P2), write(' is the winner. Congratulations!').
+
+showWinner(P1, P2, P1Score, P2Score):- write('It\'s a tie! Good game!').

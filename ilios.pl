@@ -93,7 +93,7 @@ totalPointsLine([Line|LineS], PlA, PlB, ScA, ScB):- getTilePoint(Line, Value),
 totalPoints([], PlA,PlB, PlA, PlB).
 totalPoints([Board|BoardS], PlA, PlB, ScA, ScB):- totalPointsLine(Board, PlA, PlB, RLA, RLB),
                                                   totalPoints(BoardS, RLA, RLB, ScA, ScB).
-totalPoints(ScoreA, ScoreB):- testboard(Board), totalPoints(Board, 0, 0, ScoreA, ScoreB).%TODO MUDAR BOARD
+totalPoints(Board, ScoreA, ScoreB):- totalPoints(Board, 0, 0, ScoreA, ScoreB).
 
 testgettotalpoints:- totalPoints(ScoreA, ScoreB), write('Points A: '), write(ScoreA), nl, write('Points B: '), write(ScoreB).
 
@@ -130,51 +130,52 @@ playerStartTurn(Player,Board,NewBoard):-getNewTileCoord(Col, Row),
                                         placeTile(Board, tile(Player,t10,u), Row, Col, NewBoard).
 
 
-getPlayerFromPlace(Board, Player, Line, Column):- getTileBoard(Board, Line, Column, Tile),  getPlayer(Tile, Player).
+getPlayerFromPlace(Board, Player, Line, Column):- getTileBoard(Board, Line, Column, Tile), getPlayer(Tile, Player).
 getTypeFromPlace(Board, Type, Line, Column):- getTileBoard(Board, Line, Column, Tile), getTile(Tile, Type).
 
-validPlacement(Board, tile(P,t1, u), Line, Col):- Line > 0, LineU is Line - 1, getPlayerFromPlace(Board, Player, LineU, Col), Player \= P, Player \= e,
+isAttacking(Board, tile(P,t1, u), Line, Col):- Line > 0, LineU is Line - 1, getPlayerFromPlace(Board, Player, LineU, Col), Player \= P, Player \= e,
                                                                                getTypeFromPlace(Board, Type, LineU, Col), \+integer(Type).
-validPlacement(Board, tile(P,t1, d), Line, Col):- Line < 5, LineD is Line + 1, getPlayerFromPlace(Board, Player, LineD, Col), Player \= P, Player \= e,
+isAttacking(Board, tile(P,t1, d), Line, Col):- Line < 5, LineD is Line + 1, getPlayerFromPlace(Board, Player, LineD, Col), Player \= P, Player \= e,
                                                                                getTypeFromPlace(Board, Type, LineD, Col), \+integer(Type).
-validPlacement(Board, tile(P,t1, r), Line, Col):- Col <  5, ColR is Col + 1, getPlayerFromPlace(Board, Player, Line, ColR), Player \= P, Player \= e,
+isAttacking(Board, tile(P,t1, r), Line, Col):- Col <  5, ColR is Col + 1, getPlayerFromPlace(Board, Player, Line, ColR), Player \= P, Player \= e,
                                                                              getTypeFromPlace(Board, Type, Line, ColR), \+integer(Type).
-validPlacement(Board, tile(P,t1, l), Line, Col):- Col >  0, ColL is Col - 1, getPlayerFromPlace(Board, Player, Line, ColL), Player \= P, Player \= e,
+isAttacking(Board, tile(P,t1, l), Line, Col):- Col >  0, ColL is Col - 1, getPlayerFromPlace(Board, Player, Line, ColL), Player \= P, Player \= e,
                                                                              getTypeFromPlace(Board, Type, Line, ColL), \+integer(Type).
 
-validPlacement(Board, tile(P,t2, r), Line, Col):- (LineUL is Line - 1, ColUL is Col -1, getPlayerFromPlace(Board, Player, LineUL, ColUL), Player \= P, Player \= e,
+isAttacking(Board, tile(P,t2, r), Line, Col):- (LineUL is Line - 1, ColUL is Col -1, getPlayerFromPlace(Board, Player, LineUL, ColUL), Player \= P, Player \= e,
                                                                                        getTypeFromPlace(Board, Type, LineUL, ColUL), \+integer(Type));
                                                   (LineDR is Line + 1, ColDR is Col +1, getPlayerFromPlace(Board, Player, LineDR, ColDR), Player \= P, Player \= e,
                                                                                         getTypeFromPlace(Board, Type, LineDR, ColDR), \+integer(Type)).
 
-validPlacement(Board, tile(P,t2, l), Line, Col):- (LineDL is Line + 1, ColDL is Col -1, getPlayerFromPlace(Board, Player, LineDL, ColDL), Player \= P, Player \= e,
+isAttacking(Board, tile(P,t2, l), Line, Col):- (LineDL is Line + 1, ColDL is Col -1, getPlayerFromPlace(Board, Player, LineDL, ColDL), Player \= P, Player \= e,
                                                                                         getTypeFromPlace(Board, Type, LineDL, ColDL), \+integer(Type));
                                                   (LineUR is Line - 1, ColUR is Col +1, getPlayerFromPlace(Board, Player, LineUR, ColUR), Player \= P, Player \= e,
                                                                                         getTypeFromPlace(Board, Type, LineUR, ColUR), \+integer(Type)).
 
-validPlacement(Board, tile(P,t3, l), Line, Col):- validPlacement(Board, tile(P,t1, u), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, l), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, d), Line, Col).
+isAttacking(Board, tile(P,t3, l), Line, Col):- isAttacking(Board, tile(P,t1, u), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, l), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, d), Line, Col).
 
-validPlacement(Board, tile(P,t3, u), Line, Col):- validPlacement(Board, tile(P,t1, u), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, l), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, r), Line, Col).
+isAttacking(Board, tile(P,t3, u), Line, Col):- isAttacking(Board, tile(P,t1, u), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, l), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, r), Line, Col).
 
-validPlacement(Board, tile(P,t3, r), Line, Col):- validPlacement(Board, tile(P,t1, u), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, r), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, d), Line, Col).
+isAttacking(Board, tile(P,t3, r), Line, Col):- isAttacking(Board, tile(P,t1, u), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, r), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, d), Line, Col).
 
-validPlacement(Board, tile(P,t3, d), Line, Col):- validPlacement(Board, tile(P,t1, r), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, d), Line, Col);
-                                                  validPlacement(Board, tile(P,t1, l), Line, Col).
+isAttacking(Board, tile(P,t3, d), Line, Col):- isAttacking(Board, tile(P,t1, r), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, d), Line, Col);
+                                                  isAttacking(Board, tile(P,t1, l), Line, Col).
 
-validPlacement(Board, tile(P,t4, _), Line, Col):- validPlacement(Board, tile(P,t2, l), Line, Col);
-                                                  validPlacement(Board, tile(P,t2, r), Line, Col).
+isAttacking(Board, tile(P,t4, _), Line, Col):- isAttacking(Board, tile(P,t2, l), Line, Col);
+                                                  isAttacking(Board, tile(P,t2, r), Line, Col).
 
-validPlacement(Board, tile(P,t8, _), Line, Col):-  validPlacement(Board, tile(P,t4, u), Line, Col);
-                                                   validPlacement(Board, tile(P,t3, u), Line, Col);
-                                                   validPlacement(Board, tile(P,t3, d), Line, Col).
+isAttacking(Board, tile(P,t8, _), Line, Col):-  isAttacking(Board, tile(P,t4, u), Line, Col);
+                                                   isAttacking(Board, tile(P,t3, u), Line, Col);
+                                                   isAttacking(Board, tile(P,t3, d), Line, Col).
 
+validPlacement(Board, tile(P, Tile, Dir), Line, Col):- emptyPlace(Board, Line, Col), isAttacking(Board, tile(P, Tile, Dir), Line, Col).
 testvalidplacement:- testboard(Board), validPlacement(Board, tile('B', t8, l), 5, 2).
 
 %redefinir tabuleiro com retract
@@ -206,6 +207,7 @@ game(Board, P1Hand, P2Hand, TilePool, PoolSize, [P1|[P2]]):-
     removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
     getNewTileCoord(P1C, P1R),
     rotateTile(Tile, RTile),
+    validPlacement(Board, RTile, P1R, P1C),
     placeTile(Board, RTile, P1R, P1C, Board1),
     addTilePlayerHand(TilePool, PoolSize, TilePool1, P1, NP1Hand, NNP1Hand),
     PoolSize1 is PoolSize - 1,
@@ -217,11 +219,15 @@ game(Board, P1Hand, P2Hand, TilePool, PoolSize, [P1|[P2]]):-
     removeTilePlayerHand(Tile2, P2Hand, NP2Hand, P2TN),
     getNewTileCoord(P2C, P2R),
     rotateTile(Tile2, RTile2),
+    validPlacement(Board1, RTile2, P2R, P2C),
     placeTile(Board1, RTile2, P2R, P2C, NewBoard),
     addTilePlayerHand(TilePool1, PoolSize1, TilePool2, P2, NP2Hand, NNP2Hand),
     PoolSize2 is PoolSize1 - 1,
 
-    displayBoard(NewBoard), nl.
+    displayBoard(NewBoard), nl,
+
+
+    !, game(NewBoard, NNP1Hand, NNP2Hand, TilePool2, PoolSize2, [P1|[P2]]).
 
 /*
 selectTile([Hand|HandS], 0, Hand).
@@ -229,3 +235,20 @@ selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,
                                       selectTile(HandS, Num1, Tile).
 */
 test:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, 30, Players).
+
+gameEnded(Board, P1, P2):- \+boardFull(Board), !, totalPoints(Board, ScoreA, ScoreB), showWinner(P1, P2, ScoreA, ScoreB), nl, showScore(P1, P2, ScoreA, ScoreB), !.
+
+
+
+testgameended:- finalboard(Board), gameEnded(Board, 'A', 'B').
+
+
+testrepeat:- testboard(Board), playerhand(P1Hand),
+    displayPlayerHand(P1Hand, 'A'),
+        getNumTile(P1TN),
+        removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
+        getNewTileCoord(P1C, P1R),
+        rotateTile(Tile, RTile), write(RTile),
+        validPlacement(Board, RTile, P1R, P1C),
+        placeTile(Board, RTile, P1R, P1C, Board1),
+    write('done').
