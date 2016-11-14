@@ -138,7 +138,7 @@ findEmptyLine([_|Es],Row,Col,RR,CC):-  Col1 is Col + 1 ,
                                       findEmptyLine(Es,Row,Col1,RR,CC).
 
 playINempty(Board,NewBoard,Tile) :- findEmpty(Board,0,0,Row,Col),
-                                           placeTile(Board,Tile,Row,Col,NewBoard),write(NewBoard).
+                                           placeTile(Board,Tile,Row,Col,NewBoard).
 
 playInValidPlace(Board, NewBoard, Option,Player,PlayerHand,NPlayerHand):-
                                                                 getRowPlayable(Option, Row),

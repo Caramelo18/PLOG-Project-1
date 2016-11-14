@@ -238,7 +238,6 @@ surroundedTilesLine([E1|Es],[E1N|EsN],Col,Row,Board):- Col1 is Col +1,
 
 
 checkEmpty(E1):-getTile(E1,T),
-                write(T),nl,
                  T=e.
 
 checkNotEmpty(E1):-getTile(E1,T),
