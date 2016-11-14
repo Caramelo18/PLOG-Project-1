@@ -1,4 +1,4 @@
-%:-initialization main.
+:-initialization main.
 :-include('board.pl').
 :-include('interface.pl').
 :-dynamic(playerList/1).
@@ -114,13 +114,15 @@ repeat:
         fim de jogo,
       Mostar Resultados
 */
-/*
 
 
-main:-confGame(GameType,BotLevel),
-        %debug
-        write(GameType), write(' '), write(BotLevel).
-*/
+
+main:-confGame(GameType),
+      (GameType = 1 -> pvp
+        ;
+       GameType = 2 -> pvb
+      ).
+
 playerListOp([['A' , 'B'], ['B', 'A']]).
 pickFirstPlayer(0, Order):- playerListOp([Order|_]).
 pickFirstPlayer(1, Order):- playerListOp([_|[Order]]).
@@ -177,7 +179,7 @@ isAttacking(Board, tile(P,t8, _), Line, Col):-  isAttacking(Board, tile(P,t4, u)
                                                    isAttacking(Board, tile(P,t3, u), Line, Col);
                                                    isAttacking(Board, tile(P,t3, d), Line, Col).
 
-validPlacement(Board, tile(P, Tile, Dir), Line, Col):- emptyPlace(Board, Line, Col), isAttacking(Board, tile(P, Tile, Dir), Line, Col).
+validPlacement(Board, tile(P, Tile, Dir), Line, Col):- emptyPlace(Board, Line, Col),write('EMPTY'), isAttacking(Board, tile(P, Tile, Dir), Line, Col),write('ISatacking').
 testvalidplacement:- testboard(Board), validPlacement(Board, tile('B', t8, l), 5, 2).
 
 
@@ -281,15 +283,25 @@ attack(Board, tile(P,t3, d), Line, Col, NewBoard):- attack(Board, tile(P,t1, r),
                                                     attack(NewBoard2, tile(P,t1, l), Line, Col, NewBoard3),
                                                     placeTile(NewBoard3, tile(P, t3, d), Line, Col, NewBoard).
 
-attack(Board, tile(P,t4, _), Line, Col, NewBoard):- attack(Board, tile(P,t2, l), Line, Col, NewBoard1),
-                                                    attack(NewBoard1, tile(P, t2, r), Line, Col, NewBoard2),
-                                                    placeTile(NewBoard2, tile(P, t4, u), Line, Col, NewBoard).
+attack(Board, tile(P,t4, _), Line, Col, NewBoard):- (attack(Board, tile(P,t2, l), Line, Col, NewBoard1),
+                                                                                                        attack(NewBoard1, tile(P, t2, r), Line, Col, NewBoard2),
+                                                                                                        placeTile(NewBoard2, tile(P, t4, u), Line, Col, NewBoard));
+                                                                                                        (
+                                                                                                        attack(Board, tile(P,t2, l), Line, Col, NewBoard1),
+                                                                                                        placeTile(NewBoard1, tile(P, t4, u), Line, Col, NewBoard)
+                                                                                                        );
+                                                                                                        (
+                                                                                                        attack(Board, tile(P, t2, r), Line, Col, NewBoard2),
+                                                                                                        placeTile(NewBoard2, tile(P, t4, u), Line, Col, NewBoard)
+                                                                                                        ).
 
 attack(Board, tile(P,t8, _), Line, Col, NewBoard):- attack(Board, tile(P,t4, u), Line, Col, NewBoard1),
                                                     attack(NewBoard1, tile(P,t3, u), Line, Col, NewBoard2),
                                                     attack(NewBoard2, tile(P,t1, d), Line, Col, NewBoard3),
                                                     placeTile(NewBoard3, tile(P, t8, u), Line, Col, NewBoard).
 
+                                                    attack(Board, tile(P, t1, _), Line, Col, Board).
+                                                    attack(Board, tile(P, t4, _), Line, Col, Board).
 
 
 playerStartTurn(Player,Board,NewBoard):-repeat,
@@ -332,16 +344,16 @@ playerTurn(Player, PHand, PNHand, Board, NewBoard,PoolSize,NPoolSize,TilePool,NT
                                                    rotateTile(Tile, RTile),
                                                   (
                                                    (
-                                                     listValidMoves(Board,Result,Player),
+                                                     listValidMoves(Board,Result,Player,PHand),
                                                      Result == [],
                                                      emptyPlace(Board,P1R,P1C),
                                                      placeTile(Board, RTile, P1R, P1C, Board1)
                                                    );
                                                    (
-                                                     validPlacement(Board, RTile, P1R, P1C), write('VALID'), nl,
+                                                     validPlacement(Board, RTile, P1R, P1C),
                                                      attack(Board, RTile, P1R, P1C, Board1)
                                                    )
-                                                  ),
+                                                  ),!,
 
                                                    addTilePlayerHand(TilePool, PoolSize, NTilePool, Player, NP1Hand, PNHand),
                                                    surroundedTiles(Board1,NewBoard,0,Board1),
@@ -369,22 +381,30 @@ selectTile([Hand|HandS], 0, Hand).
 selectTile([Hand|HandS], Num, Tile):- Num1 is Num - 1,
                                       selectTile(HandS, Num1, Tile).
 */
-test:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, 30, Players).
+pvp:- startGame(Board, P1Hand, P2Hand, TPool, Players), game(Board, P1Hand, P2Hand, TPool, 30, Players).
 
 gameEnded(Board, P1, P2):- boardFull(Board), !, totalPoints(Board, ScoreA, ScoreB), showWinner(P1, P2, ScoreA, ScoreB), nl, showScore(P1, P2, ScoreA, ScoreB), !.
 
 
 
-testgameended:- finalboard(Board), gameEnded(Board, 'A', 'B').
 
 
-testrepeat:- testboard(Board), playerhand(P1Hand),
-        displayPlayerHand(P1Hand, 'A'),
-        repeat,
-        getNumTile(P1TN),
-        removeTilePlayerHand(Tile, P1Hand, NP1Hand, P1TN),
-        getNewTileCoord(P1C, P1R),
-        rotateTile(Tile, RTile), write(RTile),
-        validPlacement(Board, RTile, P1R, P1C),
-        placeTile(Board, RTile, P1R, P1C, Board1),
-    write('done').
+botGame(Board, P1Hand, P2Hand, TilePool, PoolSize, [P1|[P2]]):-
+      playerTurn(P1, P1Hand, NNP1Hand, Board, Board1,PoolSize, PoolSize1, TilePool,TilePool1),
+
+      displayBoard(Board1), nl,
+
+
+      !,botLevel1Turn(Board1,NewBoard,P2,P2Hand,NNP2Hand,TilePool1,PoolSize1,TilePool2),
+      PoolSize2 is PoolSize1 - 1,
+      displayBoard(NewBoard), nl,
+
+      !,(
+          gameEnded(NewBoard,P1,P2)
+          ;
+          !,game(NewBoard, NNP1Hand, NNP2Hand, TilePool2, PoolSize2, [P1|[P2]])
+        ).
+
+
+
+pvb:-startGame(Board, P1Hand, P2Hand, TPool, Players), botGame(Board, P1Hand, P2Hand, TPool, 30, Players).

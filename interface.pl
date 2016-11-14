@@ -103,59 +103,42 @@ displayMenu:- write('----------------------------'), nl,
               write('| |          Menu         | |'), nl,
               write('| |  1 Player Vs Player   | |'), nl,
               write('| |  2 Player Vs Bot      | |'), nl,
-              write('| |  3 Bot    Vs Bot      | |'), nl,
-              write('| |  4 Exit               | |'), nl,
+              write('| |                       | |'), nl,
+              write('| |                       | |'), nl,
               write('----------------------------').
 
 displayBotLevel:-write('----------------------------'), nl,
                  write('| |       Bot Level      | |'), nl,
-                 write('| |     1  Level 1       | |'), nl,
-                 write('| |     2  Level 2       | |'), nl,
+                 write('| |        Level 1       | |'), nl,
+                 write('| |                      | |'), nl,
                  write('----------------------------').
 
 
-selectBot(BotLevel):- repeat,
-                      nl,
-                      displayBotLevel,
-                      nl,
-                      write('----------------------------'),
-                      nl,
-                      optionSelect(1,2,BotLevel),
-                      write('----------------------------'),
-                      nl.
-
-confGame(GameType,BotLevel):- displayStart,
+selectBot:- nl,
+            displayBotLevel,
+            nl.
+confGame(GameType):- displayStart,
                                nl,
                                displayMenu,
-                               repeat,
                                nl,
+                               repeat,
                                write('----------------------------'),
                                nl,
-                               optionSelect(1,4,GameType),
-                               (
-                                  GameType = 1 -> BotLevel is 0; % PvP
-                                  GameType = 2 -> selectBot(BotLevel); % PvB
-                                  GameType = 3 -> selectBot(BotLevel); % BvB
-                                  GameType = 4 % Exit
-                               ),
+                               optionSelect(1,2,GameType),
                                write('----------------------------'),
                                nl.
 
-%testes
+
 
 playerhand([tile(a,t2,l),     tile(a,t2,l), tile(a,t2,r)]).
-thand:-playerhand(X), write(X), nl, displayPlayerHand(X,'Player 1').
-tinput:- getNewTileCoord(X,Y),write(X), nl, write(Y),nl.
+
 
 showScore(P1, P2, P1Score, P2Score):- write('Player '), write(P1), write(' score:'), write(P1Score), nl,
                                       write('Player '), write(P2), write(' score:'), write(P2Score).
-showWinner(P1, P2, P1Score, P2Score):- P1Score > P2Score,
+showWinner(P1, _, P1Score, P2Score):- P1Score > P2Score,
                                        write('Player '), write(P1), write(' is the winner. Congratulations!').
 
-showWinner(P1, P2, P1Score, P2Score):- P2Score > P1Score,
+showWinner(_, P2, P1Score, P2Score):- P2Score > P1Score,
                                        write('Player '), write(P2), write(' is the winner. Congratulations!').
 
-showWinner(P1, P2, P1Score, P2Score):- write('It\'s a tie! Good game!').
-
-
-tDir :-getTileDirection(t2, Direction), write(Direction).
+showWinner(_, _, _, _):- write('It\'s a tie! Good game!').
