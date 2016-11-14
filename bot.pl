@@ -121,9 +121,6 @@ xXx([[],[],validP(0,4,dl),[],validP(1,4,dl),[],[],validP(2,4,dl),validP(1,5,d),v
 tvalid:-testboard(X),playerhand(PlayerHand),listValidMoves(X,R,'B',PlayerHand),displayBoard(X),nl,write(R),nl,playerhand(PlayerHand),crossCompability(PlayerHand,R, Result), nl, write(Result).
 trem:- xXx(X), clearOutput(X,R), nl, write(R),nl.
 
-
-crossCompability(PlayerHand,Options, Result):-crossCompability(PlayerHand,Options,Result).
-
 %playINempty(Board,NewBoard,Player,Tile).
 
 findEmpty([],_,_,_,_).

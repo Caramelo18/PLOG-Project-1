@@ -63,17 +63,9 @@ removeTilePlayerHand(Tile, [Hand|Hands], [Hand|NewHands], TileNum):- TileNum > 0
 
 addTilePlayerHand(Pool, PoolSize, NewPool, Player, Hand, NewHand):- getRandomTile(Type, Pool, NewPool, PoolSize), createTile(Tile, Player, Type), append([Tile], Hand, NewHand), nl.
 
-displayboard:- board(X), display_first_line, display_board(X, 1).
-
-gametestchangeowner:- board(X), display_first_line, display_board(X, 1), changeOwnerBoard(X, 4, 2, b, T), display_first_line, display_board(T, 1).
-gametestplacetile:- board(X), display_first_line, display_board(X, 1), placeTile(X, tile(b, t8, u), 5, 5, T), display_first_line, display_board(T, 1).
-
-%testdrawtile:- getRandomTile(Tile,R), write('Tile: '), write(Tile), nl.
-getplayerhand:- tilePool(Pool), getPlayerStartHand(a, List, Pool, NewPool), write(List), nl, displayPlayerHand(List, 'A'),nl, write(NewPool).
-%testremoveplayertile:- getPlayerStartHand(a, Hand), displayPlayerHand(Hand, 'A'), nl, removeTilePlayerHand(Tile, Hand, NewHand, 0), write(Tile), nl, displayPlayerHand(NewHand, 'A').
 
 tph([tile(a,t2,r), tile(a,t2,l)]).
-testaddplayertile:- tilePool(Pool), tph(Hand), write(Pool), nl, addTilePlayerHand(Pool, 36, NewPool, 'A', Hand, NewHand), write(NewPool), nl, displayPlayerHand(NewHand, 'A').
+
 
 getTilePoint(Tile, Value):- getTile(Tile, Type), integer(Type), Value is Type.
 getTilePoint(_, Value):- Value is 0.
@@ -96,7 +88,7 @@ totalPoints([Board|BoardS], PlA, PlB, ScA, ScB):- totalPointsLine(Board, PlA, Pl
                                                   totalPoints(BoardS, RLA, RLB, ScA, ScB).
 totalPoints(Board, ScoreA, ScoreB):- totalPoints(Board, 0, 0, ScoreA, ScoreB).
 
-testgettotalpoints:- totalPoints(ScoreA, ScoreB), write('Points A: '), write(ScoreA), nl, write('Points B: '), write(ScoreB).
+
 
 
 rotateTile(tile(P, t1, _), NewTile):- getTileDirection(t1, Dir), assignTile(tile(P, t1, Dir), NewTile).
@@ -179,8 +171,8 @@ isAttacking(Board, tile(P,t8, _), Line, Col):-  isAttacking(Board, tile(P,t4, u)
                                                    isAttacking(Board, tile(P,t3, u), Line, Col);
                                                    isAttacking(Board, tile(P,t3, d), Line, Col).
 
-validPlacement(Board, tile(P, Tile, Dir), Line, Col):- emptyPlace(Board, Line, Col),write('EMPTY'), isAttacking(Board, tile(P, Tile, Dir), Line, Col),write('ISatacking').
-testvalidplacement:- testboard(Board), validPlacement(Board, tile('B', t8, l), 5, 2).
+validPlacement(Board, tile(P, Tile, Dir), Line, Col):- emptyPlace(Board, Line, Col), isAttacking(Board, tile(P, Tile, Dir), Line, Col).
+
 
 
 
@@ -298,10 +290,11 @@ attack(Board, tile(P,t4, _), Line, Col, NewBoard):- (attack(Board, tile(P,t2, l)
 attack(Board, tile(P,t8, _), Line, Col, NewBoard):- attack(Board, tile(P,t4, u), Line, Col, NewBoard1),
                                                     attack(NewBoard1, tile(P,t3, u), Line, Col, NewBoard2),
                                                     attack(NewBoard2, tile(P,t1, d), Line, Col, NewBoard3),
+
                                                     placeTile(NewBoard3, tile(P, t8, u), Line, Col, NewBoard).
 
-                                                    attack(Board, tile(P, t1, _), Line, Col, Board).
-                                                    attack(Board, tile(P, t4, _), Line, Col, Board).
+                                                    attack(Board, tile(_, t1, _), _, _, Board).
+                                                    attack(Board, tile(_, t4, _), _, _, Board).
 
 
 playerStartTurn(Player,Board,NewBoard):-repeat,
