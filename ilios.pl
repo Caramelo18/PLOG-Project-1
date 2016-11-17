@@ -395,7 +395,7 @@ botGame(Board, P1Hand, P2Hand, TilePool, PoolSize, [P1|[P2]]):-
       !,(
           gameEnded(NewBoard,P1,P2)
           ;
-          !,game(NewBoard, NNP1Hand, NNP2Hand, TilePool2, PoolSize2, [P1|[P2]])
+          !,botGame(NewBoard, NNP1Hand, NNP2Hand, TilePool2, PoolSize2, [P1|[P2]])
         ).
 
 

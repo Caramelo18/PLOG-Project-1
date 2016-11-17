@@ -181,12 +181,12 @@ botLevel1Turn(Board,NewBoard,Player,PlayerHand,NPlayerHand,TilePool,PoolSize,New
           [R1|Rs] == [],
 
           removeTilePlayerHand(Tile,PlayerHand,Hand,0),
-          playINempty(Board,NewBoard,Tile)
+          playINempty(Board,Board1,Tile)
         )
         ;
         (
 
-          playInValidPlace(Board, NewBoard, R1,Player,PlayerHand,Hand)
+          playInValidPlace(Board, Board1, R1,Player,PlayerHand,Hand)
 
         )
         ),
